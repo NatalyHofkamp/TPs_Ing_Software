@@ -1,22 +1,7 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Eta reduce" #-}
-
-module Palet ( Palet, newP, destinationP, netP )
-  where
-
 import System.IO.Unsafe (unsafePerformIO)
 import Control.Exception (evaluate, tryJust, SomeException)
 
-data Palet = Pal String Int deriving (Eq, Show)
-
-newP :: String -> Int -> Palet   -- construye un Palet dada una ciudad de destino y un peso en toneladas
-newP city weight = Pal city weight
-destinationP :: Palet -> String  -- responde la ciudad destino del palet
-destinationP (Pal city _) = city
-netP :: Palet -> Int 
-netP (Pal _ weight) = weight -- responde el peso en toneladas del palet
-
-
+import Palet (Palet(..), newP, destinationP, netP)
 testF :: Show a => a -> Bool
 testF action = unsafePerformIO $ do
     result <- tryJust isException (evaluate action)
