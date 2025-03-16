@@ -8,8 +8,8 @@ import Route
 
 data Stack = Sta [ Palet ] Int deriving (Eq, Show)
 
-createpalets :: Int -> [Palet]
-createpalets x = replicate x (newP "" 0)
+-- createpalets :: Int -> [Palet]
+-- createpalets x = replicate x (newP "" 0)
 
 newS :: Int -> Stack                      -- construye una Pila con la capacidad indicada 
 newS capacity = Sta [] capacity
@@ -42,4 +42,5 @@ popS (Sta palets capacity) city = Sta (filter (\palet -> destinationP palet /= c
 TESTEO
 PONER MAS PALETS D LA CANT DISPONIBLES (CANTIDAD)
 PONER MAS PESO DEL QUE HAY
+chequear pops filtro: que pasa si no hay palet para esa ciudad
 -}
