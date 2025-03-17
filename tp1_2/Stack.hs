@@ -1,4 +1,4 @@
-module Stack ( Stack (..), newS, nfreeCellsS, stackS, netS, holdsS, popS,getLastP)
+module Stack ( Stack (..), newS, freeCellsS, stackS, netS, holdsS, popS,getLastP)
   where
 
 import Palet
@@ -9,8 +9,8 @@ data Stack = Sta [ Palet ] Int deriving (Eq, Show)
 newS :: Int -> Stack                      -- construye una Pila con la capacidad indicada 
 newS capacity = Sta [] capacity
 
-nfreeCellsS :: Stack -> Int                -- responde la celdas disponibles en la pila
-nfreeCellsS (Sta palets capacity) = capacity - length  palets
+freeCellsS :: Stack -> Int                -- responde la celdas disponibles en la pila
+freeCellsS (Sta palets capacity) = capacity - length  palets
 
 netS :: Stack -> Int                      -- responde el peso neto de los paletes en la pila
 netS (Sta palets _) = sum (map netP palets)
@@ -31,9 +31,11 @@ getCities (Sta palets _) = [destinationP p | p <- palets]  -- Recoge las ciudade
 
 
 
+
+
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets capacity) palet
-  | length palets < capacity  -- Verifica que no se haya alcanzado la capacidad
+  | freeCellsS (Sta palets capacity) > 0 -- Verifica que haya celdas libres
     && netS (Sta palets capacity) + netP palet <= 10  -- Verifica el peso total
     && (destinationP palet `notElem` cities  -- Verifica que la ciudad de destino no esté ya en la pila
         || null palets

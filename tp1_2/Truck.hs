@@ -10,15 +10,15 @@ newT :: Int -> Int -> Route -> Truck -- construye un camion según una cantidad 
 newT q_bahias height = Tru (replicate q_bahias (newS height))
 
 freeCellsT :: Truck -> Int            -- responde la celdas disponibles en el camion
-freeCellsT (Tru stacks _) = sum (map nfreeCellsS stacks)
+freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
-
-loadT :: Truck -> Palet -> Truck      -- carga un palet en el camion
-loadT (Tru [] route) _ = Tru [] route  -- Si no hay stacks, el camión no cambia
+loadT :: Truck -> Palet -> Truck
 loadT (Tru (s:ss) route) palet
-    | nfreeCellsS s > 0 = Tru (stackS s palet : ss) route  -- Carga en el primer stack con espacio
-    | otherwise = let Tru newStacks _ = loadT (Tru ss route) palet  -- Prueba en los demás stacks
-                  in Tru (s : newStacks) route
+    | stackS s palet /= s = Tru ((stackS s palet) : ss) route  -- Si el palet se pudo apilar, actualiza el stack
+    | otherwise = let Tru newStacks newRoute = loadT (Tru ss route) palet  -- Intenta en los stacks restantes
+                  in Tru (s : newStacks) newRoute  -- Mantiene el stack original si no se pudo cargar ahí
+
+
 
 unloadT :: Truck -> String -> Truck   -- responde un camion al que se le han descargado los paletes que podían descargarse en la ciudad
 unloadT (Tru stacks route) city = Tru (map (`popS` city) stacks) route

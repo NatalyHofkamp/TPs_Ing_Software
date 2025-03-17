@@ -21,21 +21,24 @@ p3 = Pal "Barcelona" 1
 route :: Route
 route = Rou ["Madrid", "Valencia", "Barcelona"]
 
+
+
 -- Creación de un camión de ejemplo
 truck1 :: Truck
 truck1 = newT 3 10 route -- Camión con 3 bahías y cada una con altura de 10
-
 -- Casos de prueba
 
 -- Test de freeCellsT
 testFreeCellsT :: Test
 testFreeCellsT = TestCase (assertEqual "Celdas disponibles en el camión" 30 (freeCellsT truck1))
 
+
+
 -- Test de loadT (cargar palet en el camión)
 testLoadT :: Test
 testLoadT = TestCase (assertEqual "Cargar un palet en el camión" 
-                      (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)
-                      (loadT truck1 p1))
+                      (Tru [Sta [p1] 10, Sta [p2] 10] route)
+                      (loadT truck1 p1, loadT truck1 p2))
 
 -- Test de unloadT (descargar palets de una ciudad)
 testUnloadT :: Test

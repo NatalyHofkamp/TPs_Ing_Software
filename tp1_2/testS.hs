@@ -22,7 +22,7 @@ stack2 = Sta [p1, p2, p3] 3  -- Pila con capacidad llena
 
 -- Test de freeCellsS
 testFreeCellsS :: Test
-testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (nfreeCellsS stack1))
+testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (freeCellsS stack1))
 
 -- Test de netS
 testNetS :: Test
