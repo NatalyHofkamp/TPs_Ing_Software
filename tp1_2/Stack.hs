@@ -32,18 +32,18 @@ getCities (Sta palets _) = [destinationP p | p <- palets]  -- Recoge las ciudade
 
 
 
-
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets capacity) palet
-  | freeCellsS (Sta palets capacity) > 0 -- Verifica que haya celdas libres
-    && netS (Sta palets capacity) + netP palet <= 10  -- Verifica el peso total
-    && (destinationP palet `notElem` cities  -- Verifica que la ciudad de destino no esté ya en la pila
+  | freeCellsS (Sta palets capacity) > 0
+    && netS (Sta palets capacity) + netP palet <= 10
+    && (destinationP palet `notElem` cities
         || null palets
-        || getCity (reverse cities) (destinationP palet) (destinationP (getLastP (Sta palets capacity))))  -- Verifica el orden de las ciudades
-  = Sta (palet : palets) capacity  -- Si cumple todas las condiciones, agrega el palet
-  | otherwise = Sta palets capacity  -- Si no se puede agregar, retorna la pila sin cambios
+        || getCity (reverse cities) (destinationP palet) (destinationP (getLastP (Sta palets capacity))))
+  = Sta (palets ++ [palet]) capacity  
+  | otherwise = Sta palets capacity
   where
-    cities = getCities (Sta palets capacity)  
+    cities = getCities (Sta palets capacity)
+
     
 popS :: Stack -> String -> Stack  -- quita del tope los paletes con destino en la ciudad indicada
 popS (Sta palets capacity) city = Sta [p | p <- palets, destinationP p /= city] capacity

@@ -1,11 +1,10 @@
 module TestsT where
 
-import Truck
-
-import Palet
-import Route
-import Stack
 import Test.HUnit
+import Truck
+import Palet
+import Stack
+import Route
 
 -- Ejemplo de palets de prueba
 p1 :: Palet
@@ -17,55 +16,73 @@ p2 = Pal "Valencia" 2
 p3 :: Palet
 p3 = Pal "Barcelona" 1 
 
+p4 :: Palet
+p4 = Pal "Madrid" 4
+
+p5 :: Palet
+p5 = Pal "Valencia" 5
+
+p6 :: Palet
+p6 = Pal "Barcelona" 6
+
 -- Ejemplo de ruta de prueba
 route :: Route
 route = Rou ["Madrid", "Valencia", "Barcelona"]
 
-
-
--- Creación de un camión de ejemplo
+-- Camión de prueba con 3 bahías y capacidad de 10
 truck1 :: Truck
-truck1 = newT 3 10 route -- Camión con 3 bahías y cada una con altura de 10
--- Casos de prueba
+truck1 = newT 3 10 route 
 
 -- Test de freeCellsT
 testFreeCellsT :: Test
 testFreeCellsT = TestCase (assertEqual "Celdas disponibles en el camión" 30 (freeCellsT truck1))
 
+-- Test cargar un palet en el camión vacío
+testLoadTEmpty :: Test
+testLoadTEmpty = TestCase (assertEqual "Cargar palet en camión vacío"
+                      (Tru [Sta [p1] 10, Sta [] 10, Sta [] 10] route)
+                      (loadT truck1 p1))
 
+-- Test cargar dos palets en el mismo stack
+testLoadTStack :: Test
+testLoadTStack = TestCase (assertEqual "Cargar dos palets en el mismo stack"
+                      (Tru [Sta [p1, p2] 10, Sta [] 10, Sta [] 10] route)
+                      (loadT (loadT truck1 p1) p2))
 
--- Test de loadT (cargar palet en el camión)
-testLoadT :: Test
-testLoadT = TestCase (assertEqual "Cargar un palet en el camión" 
-                      (Tru [Sta [p1] 10, Sta [p2] 10] route)
-                      (loadT truck1 p1, loadT truck1 p2))
+-- Test cargar en stacks diferentes si la ciudad cambia
+testLoadTDifferentStack :: Test
+testLoadTDifferentStack = TestCase (assertEqual "Cargar en otro stack si la ciudad es diferente"
+                      (Tru [Sta [p1] 10, Sta [p3] 10, Sta [] 10] route)
+                      (loadT (loadT truck1 p1) p3))
 
--- Test de unloadT (descargar palets de una ciudad)
+-- Test intentar cargar cuando excede el peso permitido
+testLoadTWeightLimit :: Test
+testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
+                      (Tru [Sta [p1, p2] 10, Sta [] 10, Sta [] 10] route)  -- No cambia porque p4 sobrepasa el límite
+                      (loadT (loadT truck1 p1) p4))
+
+-- Test descargar un palet correctamente
 testUnloadT :: Test
-testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad 'Valencia'" 
-                      (Tru [Sta [p3] 10, Sta [p1] 10, Sta [p2] 10] route) 
-                      (unloadT truck1 "Valencia"))
+testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad 'Madrid'"
+                      (Tru [Sta [] 10, Sta [p2] 10, Sta [p3] 10] route)
+                      (unloadT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route) "Madrid"))
 
--- Test de netT (peso neto de los palets en el camión)
+-- Test intentar descargar cuando la ciudad no tiene palets
+testUnloadTNoPalets :: Test
+testUnloadTNoPalets = TestCase (assertEqual "Intentar descargar donde no hay palets"
+                      (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)
+                      (unloadT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route) "Sevilla"))  -- No hay palets en Sevilla
+
+-- Test peso neto del camión
 testNetT :: Test
-testNetT = TestCase (assertEqual "Peso neto de los palets en el camión" 
-                    6 (netT truck1))  -- 3 + 2 + 1
-
--- Test de cargar cuando no hay suficiente espacio
-testLoadTNoSpace :: Test
-testLoadTNoSpace = TestCase (assertEqual "Intento de cargar palet cuando no hay espacio"
-                            truck1  -- El camión no cambia
-                            (loadT truck1 p1))
-
--- Test de cargar en el segundo stack del camión
-testLoadTSecondStack :: Test
-testLoadTSecondStack = TestCase (assertEqual "Cargar en el segundo stack cuando el primero está lleno"
-                                (Tru [Sta [p1] 10, Sta [p2, p3] 10, Sta [] 10] route)
-                                (loadT (Tru [Sta [p2, p3] 10, Sta [] 10, Sta [] 10] route) p1))
+testNetT = TestCase (assertEqual "Peso neto de los palets en el camión"
+                      6  -- 3 + 2 + 1
+                      (netT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)))
 
 -- Agrupar todos los tests
 tests :: Test
-tests = TestList [testFreeCellsT, testLoadT, testUnloadT, testNetT, testLoadTNoSpace, testLoadTSecondStack]
+tests = TestList [testFreeCellsT, testLoadTEmpty, testLoadTStack, testLoadTDifferentStack,
+                  testLoadTWeightLimit, testUnloadT, testUnloadTNoPalets, testNetT]
 
 -- Ejecutar los tests
 runTests :: IO Counts

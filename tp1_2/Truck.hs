@@ -12,6 +12,7 @@ newT q_bahias height = Tru (replicate q_bahias (newS height))
 freeCellsT :: Truck -> Int            -- responde la celdas disponibles en el camion
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
+
 loadT :: Truck -> Palet -> Truck
 loadT (Tru (s:ss) route) palet
     | stackS s palet /= s = Tru ((stackS s palet) : ss) route  -- Si el palet se pudo apilar, actualiza el stack
