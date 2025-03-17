@@ -79,10 +79,34 @@ testNetT = TestCase (assertEqual "Peso neto de los palets en el camión"
                       6  -- 3 + 2 + 1
                       (netT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)))
 
+testLoadUnloadMultipleTimes :: Test
+testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquetes dos veces"
+    finalTruck
+    truckAfterSecondUnload)
+  where
+    -- Camión inicial
+    initialTruck = newT 3 10 route 
+
+    -- Primera carga de 5 paquetes
+    truckAfterFirstLoad = foldl loadT initialTruck [p1, p2, p3, p4, p5]
+
+    -- Primera descarga de cada paquete
+    truckAfterFirstUnload = foldl unloadT truckAfterFirstLoad ["Madrid", "Valencia", "Barcelona"]
+
+    -- Segunda carga de los mismos paquetes
+    truckAfterSecondLoad = foldl loadT truckAfterFirstUnload [p1, p2, p3, p4, p5]
+
+    -- Segunda descarga de cada paquete
+    truckAfterSecondUnload = foldl unloadT truckAfterSecondLoad ["Madrid", "Valencia", "Barcelona"]
+
+    -- Estado esperado del camión al final (vacío porque se descargó todo)
+    finalTruck = newT 3 10 route
+
+
 -- Agrupar todos los tests
 tests :: Test
 tests = TestList [testFreeCellsT, testLoadTEmpty, testLoadTStack, testLoadTDifferentStack,
-                  testLoadTWeightLimit, testUnloadT, testUnloadTNoPalets, testNetT]
+                  testLoadTWeightLimit, testUnloadT, testUnloadTNoPalets, testNetT,testLoadUnloadMultipleTimes]
 
 -- Ejecutar los tests
 runTests :: IO Counts
