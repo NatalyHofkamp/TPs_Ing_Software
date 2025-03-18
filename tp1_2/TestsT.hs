@@ -8,26 +8,26 @@ import Route
 
 -- Ejemplo de palets de prueba
 p1 :: Palet
-p1 = Pal "Madrid" 3 
+p1 = newP "Madrid" 3 
 
 p2 :: Palet
-p2 = Pal "Valencia" 2 
+p2 = newP "Valencia" 2 
 
 p3 :: Palet
-p3 = Pal "Barcelona" 1 
+p3 = newP "Barcelona" 1 
 
 p4 :: Palet
-p4 = Pal "Madrid" 4
+p4 = newP "Madrid" 4
 
 p5 :: Palet
-p5 = Pal "Valencia" 5
+p5 = newP "Valencia" 5
 
 p6 :: Palet
-p6 = Pal "Barcelona" 6
+p6 = newP "Barcelona" 6
 
 -- Ejemplo de ruta de prueba
 route :: Route
-route = Rou ["Madrid", "Valencia", "Barcelona"]
+route = newR ["Madrid", "Valencia", "Barcelona"]
 
 -- Camión de prueba con 3 bahías y capacidad de 10
 truck1 :: Truck

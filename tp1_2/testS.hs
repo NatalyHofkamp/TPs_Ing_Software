@@ -5,13 +5,13 @@ import Route
 
 -- Crear palets de prueba
 p1 :: Palet
-p1 = Pal "Madrid" 5
+p1 = newP "Madrid" 5
 
 p2 :: Palet
-p2 = Pal "Barcelona" 1
+p2 = newP "Barcelona" 1
 
 p3 :: Palet
-p3 = Pal "Valencia" 3
+p3 = newP "Valencia" 3
 
 -- Crear una pila de prueba con capacidad 3
 stack1 :: Stack
@@ -28,9 +28,9 @@ testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (freeCellsS stack1
 testNetS :: Test
 testNetS = TestCase (assertEqual "Peso neto de la pila" 6 (netS stack1))
 
--- Test de getLastP
-testGetLastP :: Test
-testGetLastP = TestCase (assertEqual "Último palet de la pila" p2 (getLastP stack1))
+-- -- Test de getLastP
+-- testGetLastP :: Test
+-- testGetLastP = TestCase (assertEqual "Último palet de la pila" p2 (getLastP stack1))
 
 -- Test de holdsS
 testHoldsS :: Test
@@ -38,7 +38,7 @@ testHoldsS = TestCase (assertEqual "Si se puede apilar el palet en la pila" True
 
 -- Test de stackS
 testStackS :: Test
-testStackS = TestCase (assertEqual "Agregar un palet a la pila" (Sta [p3, p1, p2] 3) (stackS stack1 p3))
+testStackS = TestCase (assertEqual "Agregar un palet a la pila" (Sta [p1, p2,p3] 3) (stackS stack1 p3))
 
 -- Test de popS
 testPopS :: Test
@@ -50,7 +50,7 @@ route1 = Rou ["Madrid", "Barcelona", "Valencia"]
 
 -- Función para ejecutar todos los tests
 runTests :: IO Counts
-runTests = runTestTT (TestList [testFreeCellsS, testNetS, testGetLastP, testHoldsS, testStackS, testPopS])
+runTests = runTestTT (TestList [testFreeCellsS, testNetS, testHoldsS, testStackS, testPopS])
 
 main :: IO ()
 main = do

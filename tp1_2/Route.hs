@@ -1,4 +1,4 @@
-module Route ( Route (..), newR, inOrderR )
+module Route ( Route (..), newR, inOrderR, inRouteR)
   where
 import Data.List (elemIndex)
 
@@ -22,4 +22,4 @@ inOrderR :: Route -> String -> String -> Bool -- indica si la primer ciudad cons
 inOrderR (Rou cs) city1 city2 
     | not (inRouteR (Rou cs) city1) = False  
     | not (inRouteR (Rou cs) city2) = False 
-    | otherwise = getCity (reverse cs) city1 city2 
+    | otherwise = getCity cs city1 city2 

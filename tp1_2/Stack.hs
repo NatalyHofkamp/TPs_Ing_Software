@@ -20,10 +20,14 @@ getLastP [x] = x
 getLastP (_:xs) = getLastP xs     
 getLastP [] = error "Empty stack" 
 
+posWeight :: Palet -> Stack -> Bool
+posWeight (Pal _ weight) (Sta _ _) = weight > 0 
+
+
 holdsS :: Stack -> Palet -> Route -> Bool -- indica si la pila puede aceptar el palet considerando las ciudades en la ruta
 holdsS (Sta [] _) _ _ = True 
-holdsS (Sta palets _) new_palet route =
-    inOrderR route (destinationP new_palet) (destinationP (getLastP palets))
+holdsS (Sta palets _) new_palet (Rou cities) = 
+  inOrderR (Rou (reverse cities)) (destinationP new_palet) (destinationP (getLastP palets))
 
 
 getCities :: Stack -> [String] -- Devuelve una lista de todas las ciudades de los palets en la pila.
@@ -32,7 +36,8 @@ getCities (Sta palets _) = [destinationP p | p <- palets]
 
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets capacity) palet
-  | freeCellsS (Sta palets capacity) > 0
+  | posWeight palet (Sta palets capacity) &&
+  freeCellsS (Sta palets capacity) > 0
     && netS (Sta (palet :palets) capacity) <= 10
       = Sta (palets ++ [palet]) capacity  
   | otherwise = Sta palets capacity
