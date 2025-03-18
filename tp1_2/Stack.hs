@@ -1,4 +1,4 @@
-module Stack ( Stack (..), newS, freeCellsS, stackS, netS, holdsS, popS,getLastP)
+module Stack ( Stack, newS, freeCellsS, stackS, netS, holdsS, popS )
   where
 
 import Palet
@@ -7,7 +7,7 @@ import Route
 data Stack = Sta [ Palet ] Int deriving (Eq, Show)
 
 newS :: Int -> Stack                      -- construye una Pila con la capacidad indicada 
-newS capacity = Sta [] capacity
+newS capacity = Sta [] capacity           --contempla caso de capacidad negativa? 
 
 freeCellsS :: Stack -> Int                -- responde la celdas disponibles en la pila
 freeCellsS (Sta palets capacity) = capacity - length  palets

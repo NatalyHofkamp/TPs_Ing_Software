@@ -13,9 +13,12 @@ freeCellsT :: Truck -> Int            -- responde la celdas disponibles en el ca
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
 
-loadT :: Truck -> Palet -> Truck
+loadT :: Truck -> Palet -> Truck --falta actualizar la ruta si la ciudad no está
 loadT (Tru (s:ss) route) palet
-    | stackS s palet /= s = Tru ((stackS s palet) : ss) route  -- Si el palet se pudo apilar, actualiza el stack
+    | (stackS s palet /= s 
+        && getCity (reverse cities) (destinationP palet) (destinationP (getLastP (Sta palets capacity))))
+    
+        = Tru ((stackS s palet) : ss) route  -- Si el palet se pudo apilar, actualiza el stack
     | otherwise = let Tru newStacks newRoute = loadT (Tru ss route) palet  -- Intenta en los stacks restantes
                   in Tru (s : newStacks) newRoute  -- Mantiene el stack original si no se pudo cargar ahí
 
