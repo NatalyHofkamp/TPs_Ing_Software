@@ -1,4 +1,4 @@
-module Stack ( Stack (..), newS, freeCellsS, stackS, netS, holdsS, popS )
+module Stack ( Stack(..), newS, freeCellsS, stackS, netS, holdsS, popS )
   where
 
 import Palet
@@ -33,9 +33,8 @@ getCities (Sta palets _) = [destinationP p | p <- palets]
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets capacity) palet
   | freeCellsS (Sta palets capacity) > 0
-    && netS (Sta palets capacity) + netP palet <= 10
-    && (destinationP palet `notElem` cities || null palets)
-    = Sta (palets ++ [palet]) capacity  
+    && netS (Sta (palet :palets) capacity) <= 10
+      = Sta (palets ++ [palet]) capacity  
   | otherwise = Sta palets capacity
   where
     cities = getCities (Sta palets capacity)

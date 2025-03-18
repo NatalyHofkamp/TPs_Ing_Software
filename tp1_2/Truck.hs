@@ -13,10 +13,17 @@ freeCellsT :: Truck -> Int            -- responde la celdas disponibles en el ca
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 
 
+inRouteR :: Route -> String -> Bool -- indica si la ciudad consultada está en la ruta
+inRouteR (Rou cs) city  = city `elem` cs
+
 loadT :: Truck -> Palet -> Truck -- carga un palet en el camion
 loadT (Tru [] route) palet = Tru [] route  
-loadT (Tru (s:ss) route) palet
-    | (stackS s palet /= s  &&  holdsS s palet route) = Tru ((stackS s palet) : ss) route  
+loadT (Tru (s:ss) route) (palet)
+    | (inRouteR  route  (destinationP palet)        
+      && stackS s palet /= s   
+      && holdsS s palet route               
+    ) 
+    = Tru ((stackS s palet) : ss) route  
     | otherwise = let Tru newStacks newRoute = loadT (Tru ss route) palet 
                   in Tru (s : newStacks) newRoute  
 

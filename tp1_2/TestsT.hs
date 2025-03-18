@@ -58,8 +58,8 @@ testLoadTDifferentStack = TestCase (assertEqual "Cargar en otro stack si la ciud
 -- Test intentar cargar cuando excede el peso permitido
 testLoadTWeightLimit :: Test
 testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
-                      (Tru [Sta [p1, p2] 10, Sta [] 10, Sta [] 10] route)  -- No cambia porque p4 sobrepasa el límite
-                      (loadT (loadT truck1 p1) p4))
+                      (Tru [Sta [p1, p4] 10, Sta [] 10, Sta [] 10] route)  -- No cambia porque p4 sobrepasa el límite
+                      (loadT(loadT (loadT truck1 p1) p4) p6))
 
 -- Test descargar un palet correctamente
 testUnloadT :: Test
@@ -76,7 +76,7 @@ testUnloadTNoPalets = TestCase (assertEqual "Intentar descargar donde no hay pal
 -- Test peso neto del camión
 testNetT :: Test
 testNetT = TestCase (assertEqual "Peso neto de los palets en el camión"
-                      6  -- 3 + 2 + 1
+                      6  
                       (netT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)))
 
 testLoadUnloadMultipleTimes :: Test
