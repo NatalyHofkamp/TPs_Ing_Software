@@ -1,50 +1,58 @@
 import Test.HUnit
-import Palet  -- Importa el módulo donde definiste `Palet`
+import Stack
+import Palet
 import Route
 
--- Definir algunos valores de prueba
-p1 = Pal "Madrid" 500
-p2 = Pal "Barcelona" 750
+-- Crear palets de prueba
+p1 :: Palet
+p1 = Pal "Madrid" 5
 
--- Casos de prueba para destinationP
-testDestinationP = TestList [
-    TestCase (assertEqual "Destino de p1" "Madrid" (destinationP p1)),
-    TestCase (assertEqual "Destino de p2" "Barcelona" (destinationP p2))
-    ]
+p2 :: Palet
+p2 = Pal "Barcelona" 1
 
--- Casos de prueba para netP
-testNetP = TestList [
-    TestCase (assertEqual "Peso de p1" 500 (netP p1)),
-    TestCase (assertEqual "Peso de p2" 750 (netP p2))
-    ]
+p3 :: Palet
+p3 = Pal "Valencia" 3
 
--- Definimos algunas rutas de prueba
-route1 = Rou ["Madrid", "Barcelona", "Valencia", "Sevilla"]
-route2 = Rou ["Paris", "Lyon", "Marseille"]
-route3 = Rou ["Berlin", "Munich", "Hamburg", "Cologne"]
+-- Crear una pila de prueba con capacidad 3
+stack1 :: Stack
+stack1 = Sta [p1, p2] 3
 
--- Pruebas para `getCity`
-testGetCity = TestList [
-    TestCase (assertEqual "Madrid antes que Valencia" True (getCity ["Madrid", "Barcelona", "Valencia"] "Madrid" "Valencia")),
-    TestCase (assertEqual "Valencia antes que Madrid" False (getCity ["Valencia", "Barcelona", "Madrid"] "Madrid" "Valencia")),
-    TestCase (assertEqual "Ciudad inexistente" False (getCity ["Madrid", "Barcelona", "Valencia"] "Lisboa" "Valencia"))
-  ]
+stack2 :: Stack
+stack2 = Sta [p1, p2, p3] 3  -- Pila con capacidad llena
 
--- Pruebas para `inOrderR`
-testInOrderR = TestList [
-    TestCase (assertEqual "Madrid antes que Valencia" True (inOrderR route1 "Madrid" "Valencia")),
-    TestCase (assertEqual "Valencia antes que Madrid" False (inOrderR route1 "Valencia" "Madrid")),
-    TestCase (assertEqual "Ciudad no en la ruta" False (inOrderR route1 "Lisboa" "Valencia")),
-    TestCase (assertEqual "Primera ciudad antes que segunda en otra ruta" True (inOrderR route2 "Paris" "Marseille")),
-    TestCase (assertEqual "Ciudad inexistente en otra ruta" False (inOrderR route2 "Berlin" "Lyon"))
-  ]
+-- Test de freeCellsS
+testFreeCellsS :: Test
+testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (freeCellsS stack1))
 
+-- Test de netS
+testNetS :: Test
+testNetS = TestCase (assertEqual "Peso neto de la pila" 6 (netS stack1))
 
--- Ejecutar todas las pruebas
+-- Test de getLastP
+testGetLastP :: Test
+testGetLastP = TestCase (assertEqual "Último palet de la pila" p2 (getLastP stack1))
+
+-- Test de holdsS
+testHoldsS :: Test
+testHoldsS = TestCase (assertEqual "Si se puede apilar el palet en la pila" True (holdsS stack1 p3 route1))
+
+-- Test de stackS
+testStackS :: Test
+testStackS = TestCase (assertEqual "Agregar un palet a la pila" (Sta [p3, p1, p2] 3) (stackS stack1 p3))
+
+-- Test de popS
+testPopS :: Test
+testPopS = TestCase (assertEqual "Quitar un palet de la pila" (Sta [p1,p2] 3) (popS stack1 "Valencia"))
+
+-- Crear una ruta de prueba para `holdsS`
+route1 :: Route
+route1 = Rou ["Madrid", "Barcelona", "Valencia"]
+
+-- Función para ejecutar todos los tests
+runTests :: IO Counts
+runTests = runTestTT (TestList [testFreeCellsS, testNetS, testGetLastP, testHoldsS, testStackS, testPopS])
+
 main :: IO ()
 main = do
-    runTestTT testDestinationP
-    runTestTT testNetP
-    runTestTT testGetCity
-    runTestTT testInOrderR
-    return ()
+  counts <- runTests
+  print counts
