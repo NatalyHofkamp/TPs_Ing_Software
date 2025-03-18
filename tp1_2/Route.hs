@@ -1,4 +1,4 @@
-module Route ( Route, newR, inOrderR )
+module Route ( Route(..), newR, inOrderR )
   where
 import Data.List (elemIndex)
 

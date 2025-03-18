@@ -1,4 +1,4 @@
-module Stack ( Stack, newS, freeCellsS, stackS, netS, holdsS, popS )
+module Stack ( Stack (..), newS, freeCellsS, stackS, netS, holdsS, popS )
   where
 
 import Palet
@@ -12,34 +12,30 @@ newS capacity = Sta [] capacity           --contempla caso de capacidad negativa
 freeCellsS :: Stack -> Int                -- responde la celdas disponibles en la pila
 freeCellsS (Sta palets capacity) = capacity - length  palets
 
-netS :: Stack -> Int                      -- responde el peso neto de los paletes en la pila
+netS :: Stack -> Int                      -- responde el peso neto de los palets en la pila
 netS (Sta palets _) = sum (map netP palets)
 
-getLastP :: Stack -> Palet -- devuelve el último palet en la pila
-getLastP (Sta [] _) = error "La pila está vacía"  -- Si la pila está vacía, lanza un error
-getLastP (Sta [x] _) = x  -- Si solo queda un palet en la pila, lo devolvemos
-getLastP (Sta (_:xs) _) = getLastP (Sta xs undefined)  -- Recursión con el resto de la lista
+getLastP :: [Palet] -> Palet --devuelve el último palet en el stack
+getLastP [x] = x                 
+getLastP (_:xs) = getLastP xs     
+getLastP [] = error "Empty stack" 
 
-
-holdsS :: Stack -> Palet -> Route -> Bool
-holdsS stack new_palet route =
-    inOrderR route (destinationP new_palet) (destinationP (getLastP stack))
+holdsS :: Stack -> Palet -> Route -> Bool -- indica si la pila puede aceptar el palet considerando las ciudades en la ruta
+holdsS (Sta [] _) _ _ = True 
+holdsS (Sta palets _) new_palet route =
+    inOrderR route (destinationP new_palet) (destinationP (getLastP palets))
 
 
 getCities :: Stack -> [String] -- Devuelve una lista de todas las ciudades de los palets en la pila.
-getCities (Sta palets _) = [destinationP p | p <- palets]  -- Recoge las ciudades de los palets en la pila
-
-
+getCities (Sta palets _) = [destinationP p | p <- palets]  
 
 
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets capacity) palet
   | freeCellsS (Sta palets capacity) > 0
     && netS (Sta palets capacity) + netP palet <= 10
-    && (destinationP palet `notElem` cities
-        || null palets
-        || getCity (reverse cities) (destinationP palet) (destinationP (getLastP (Sta palets capacity))))
-  = Sta (palets ++ [palet]) capacity  
+    && (destinationP palet `notElem` cities || null palets)
+    = Sta (palets ++ [palet]) capacity  
   | otherwise = Sta palets capacity
   where
     cities = getCities (Sta palets capacity)
