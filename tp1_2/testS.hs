@@ -13,20 +13,37 @@ p2 = newP "Barcelona" 1
 p3 :: Palet
 p3 = newP "Valencia" 3
 
--- Crear una pila de prueba con capacidad 3
-stack1 :: Stack
-stack1 = Sta [p1, p2] 3
+palets1 = [p1, p2]
+palets2 = [p1, p2, p3]
 
-stack2 :: Stack
-stack2 = Sta [p1, p2, p3] 3  -- Pila con capacidad llena
+apilarPalets :: Stack -> [Palet] -> Stack
+apilarPalets stack [] = stack  -- Caso base: si no hay más palets, se devuelve el stack final
+apilarPalets stack (p:ps) = apilarPalets (stackS stack p) ps  -- Apila y sigue con los restantes
+
+stack1 = newS 3
+palets = [p1, p2, p3]
+stack1f = apilarPalets stack1 palets1
+
+stack2 = newS 3
+stack2f = apilarPalets stack2 palets1
+
+stack3 = newS 3
+stack3f = apilarPalets stack3 palets2
+
+route1 :: Route
+route1 = newR ["Madrid", "Barcelona", "Valencia"]
+
+
+testNewS :: Test
+testNewS = TestCase (assertEqual "Stack con capacidad negativa se crea en cero" (newS (-2)) (newS 0))
 
 -- Test de freeCellsS
 testFreeCellsS :: Test
-testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (freeCellsS stack1))
+testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (freeCellsS stack1f))
 
 -- Test de netS
 testNetS :: Test
-testNetS = TestCase (assertEqual "Peso neto de la pila" 6 (netS stack1))
+testNetS = TestCase (assertEqual "Peso neto de la pila" 6 (netS stack1f))
 
 -- -- Test de getLastP
 -- testGetLastP :: Test
@@ -34,23 +51,20 @@ testNetS = TestCase (assertEqual "Peso neto de la pila" 6 (netS stack1))
 
 -- Test de holdsS
 testHoldsS :: Test
-testHoldsS = TestCase (assertEqual "Si se puede apilar el palet en la pila" True (holdsS stack1 p3 route1))
+testHoldsS = TestCase (assertEqual "Si se puede apilar el palet en la pila" True (holdsS stack1f p3 route1))
 
 -- Test de stackS
 testStackS :: Test
-testStackS = TestCase (assertEqual "Agregar un palet a la pila" (Sta [p1, p2,p3] 3) (stackS stack1 p3))
+testStackS = TestCase (assertEqual "Agregar un palet a la pila" stack3f (stackS stack1f p3))
 
 -- Test de popS
 testPopS :: Test
-testPopS = TestCase (assertEqual "Quitar un palet de la pila" (Sta [p1,p2] 3) (popS stack1 "Valencia"))
+testPopS = TestCase (assertEqual "Quitar un palet de la pila" stack2f (popS stack1f "Valencia"))
 
--- Crear una ruta de prueba para `holdsS`
-route1 :: Route
-route1 = Rou ["Madrid", "Barcelona", "Valencia"]
 
 -- Función para ejecutar todos los tests
 runTests :: IO Counts
-runTests = runTestTT (TestList [testFreeCellsS, testNetS, testHoldsS, testStackS, testPopS])
+runTests = runTestTT (TestList [testNewS, testFreeCellsS, testNetS, testHoldsS, testStackS, testPopS])
 
 main :: IO ()
 main = do

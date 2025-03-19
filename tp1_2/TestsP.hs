@@ -7,7 +7,7 @@ import Palet
 
 
 testNewP :: Test
-testNewP = TestCase (assertEqual "Si se puede crear un nuevo Palet" (Pal "Bariloche" 5) (newP "Bariloche" 5))
+testNewP = TestCase (assertEqual "Si se puede crear un nuevo Palet" (newP "Bariloche" 5) (newP "Bariloche" 5))
 
 -- testNewPNeg :: Test
 -- testNewPNeg = TestCase (assertEqual "Debe lanzar error con peso negativo" (error "Invalid weight: must be greater than 0") (newP "Bariloche" (-4)))

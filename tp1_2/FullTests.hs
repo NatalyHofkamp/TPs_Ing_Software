@@ -38,10 +38,10 @@ p6 :: Palet
 p6 = newP "Dublin" 6
 
 stack1 :: Stack
-stack1 = Sta [p1, p2] 3
+stack1 = newS 3
 
 stack2 :: Stack
-stack2 = Sta [p1, p2, p3] 3 
+stack2 = newS 3 
 
 tests_palet = [testF(newP "Bariloche" 5), testF(newP "Bariloche" 0), testF(newP "Bariloche" (-2)), 
                 testF(destinationP (newP "Dublin" 3)), testF(netP (newP "Rio Cuarto" 6))]
@@ -56,5 +56,7 @@ tests_stack = [testF(newS 9), testF(newS (-4)), testF(newS (-4)),
               testF(freeCellsS stack1), testF(freeCellsS stack2),
               testF(netS stack1), testF(netS stack2),
               testF(holdsS stack1 p3 route1), testF(stackS stack1 p3)]
+
+tests_truck = []
 
 
