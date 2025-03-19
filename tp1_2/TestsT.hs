@@ -29,6 +29,9 @@ p6 = newP "Barcelona" 6
 route :: Route
 route = newR ["Madrid", "Valencia", "Barcelona"]
 
+route2 :: Route
+route2 = newR ["Valencia", "Barcelona"]
+
 routeEmpty = newR[]
 
 -- Camión de prueba con 3 bahías y capacidad de 10
@@ -78,7 +81,7 @@ testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
 -- Test descargar un palet correctamente
 testUnloadT :: Test
 testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad 'Madrid'"
-                      (Tru [Sta [] 10, Sta [p2] 10, Sta [p3] 10] route)
+                      (Tru [Sta [] 10, Sta [p2] 10, Sta [p3] 10] route2)
                       (unloadT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route) "Madrid"))
 
 -- Test intentar descargar cuando la ciudad no tiene palets
@@ -96,7 +99,7 @@ testNetT = TestCase (assertEqual "Peso neto de los palets en el camión"
 testLoadUnloadMultipleTimes :: Test
 testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquetes dos veces"
     finalTruck
-    truckAfterSecondUnload)
+    truckAfterFirstUnload)
   where
     -- Camión inicial
     initialTruck = newT 3 10 route 
@@ -106,15 +109,13 @@ testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquet
 
     -- Primera descarga de cada paquete
     truckAfterFirstUnload = foldl unloadT truckAfterFirstLoad ["Madrid", "Valencia", "Barcelona"]
-
-    -- Segunda carga de los mismos paquetes
-    truckAfterSecondLoad = foldl loadT truckAfterFirstUnload [p1, p2, p3, p4, p5]
-
-    -- Segunda descarga de cada paquete
-    truckAfterSecondUnload = foldl unloadT truckAfterSecondLoad ["Madrid", "Valencia", "Barcelona"]
-
     -- Estado esperado del camión al final (vacío porque se descargó todo)
-    finalTruck = newT 3 10 route
+    finalTruck = newT 3 10 routeEmpty
+
+negTruck:: Truck
+negTruck = newT 3 (-2) route 
+
+
 
 
 

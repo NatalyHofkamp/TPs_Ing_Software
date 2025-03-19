@@ -15,17 +15,21 @@ freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
 loadT :: Truck -> Palet -> Truck -- carga un palet en el camion
 loadT (Tru [] route) palet = Tru [] route  
 loadT (Tru (s:ss) route) (palet)
-    | (inRouteR  route  (destinationP palet)        
+    | inRouteR  route  (destinationP palet)        
       && stackS s palet /= s   
       && holdsS s palet route               
-    ) 
-    = Tru ((stackS s palet) : ss) route  
+      = Tru ((stackS s palet) : ss) route
     | otherwise = let Tru newStacks newRoute = loadT (Tru ss route) palet 
                   in Tru (s : newStacks) newRoute  
 
 
-unloadT :: Truck -> String -> Truck   -- responde un camion al que se le han descargado los paletes que podían descargarse en la ciudad
-unloadT (Tru stacks (Rou cities)) city = Tru (map (`popS` city) stacks) (Rou (tail cities))
+unloadT :: Truck -> String -> Truck
+unloadT (Tru stacks (Rou (city : cities))) currentCity
+    | city == currentCity = Tru newStacks (Rou cities) 
+    | otherwise = Tru newStacks (Rou (city:cities)) 
+  where
+    newStacks = map (`popS` currentCity) stacks 
+
 
 netT :: Truck -> Int                  -- responde el peso neto en toneladas de los paletes en el camion
 netT (Tru stacks _) = sum (map netS stacks)
