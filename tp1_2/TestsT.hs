@@ -58,8 +58,8 @@ testLoadTStack = TestCase (assertEqual "Cargar dos palets en el mismo stack"
 -- Test intentar cargar cuando excede el peso permitido
 testLoadTWeightLimit :: Test
 testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
-                      truck1  -- Debería permanecer igual si se excede el peso
-                      (loadT (loadT truck1 p1) p4))
+                      (loadT truck1 p5) -- Debería permanecer igual si se excede el peso
+                      (loadT (loadT truck1 p5) p6))
 
 -- Test descargar un palet correctamente
 testUnloadT :: Test
