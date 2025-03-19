@@ -20,9 +20,6 @@ getLastP [x] = x
 getLastP (_:xs) = getLastP xs     
 getLastP [] = error "Empty stack" 
 
-getCities :: Stack -> [String] -- Devuelve una lista de todas las ciudades de los palets en la pila.
-getCities (Sta palets _) = [destinationP p | p <- palets]  
-
 holdsS :: Stack -> Palet -> Route -> Bool
 holdsS (Sta [] _) _ _ = True
 holdsS (Sta palets _) new_palet route =
@@ -35,8 +32,6 @@ stackS (Sta palets capacity) palet
     && netS (Sta (palet :palets) capacity) <= 10
       = Sta (palets ++ [palet]) capacity  
   | otherwise = Sta palets capacity
-  where
-    cities = getCities (Sta palets capacity)
 
 popS :: Stack -> String -> Stack  -- quita del tope los paletes con destino en la ciudad indicada
 popS (Sta palets capacity) city = Sta [p | p <- palets, destinationP p /= city] capacity
