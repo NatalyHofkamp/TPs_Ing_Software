@@ -7,7 +7,7 @@ import Route
 data Truck = Tru [ Stack ] Route deriving (Eq, Show)
 
 newT :: Int -> Int -> Route -> Truck -- construye un camion según una cantidad de bahias, la altura de las mismas y una ruta
-newT q_bahias height = Tru (replicate q_bahias (newS height))
+newT q_bahias height route = Tru (replicate q_bahias (newS height)) route
 
 freeCellsT :: Truck -> Int            -- responde la celdas disponibles en el camion
 freeCellsT (Tru stacks _) = sum (map freeCellsS stacks)
