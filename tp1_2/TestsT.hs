@@ -32,6 +32,7 @@ route = newR ["Madrid", "Valencia", "Barcelona"]
 route2 :: Route
 route2 = newR ["Valencia", "Barcelona"]
 
+routeEmpty :: Route
 routeEmpty = newR[]
 
 -- Camión de prueba con 3 bahías y capacidad de 10
@@ -41,13 +42,13 @@ truck1 = newT 3 10 route
 testNewT ::Test
 testNewT = TestCase (assertEqual 
     "Se puede crear un nuevo camión con 9 bahías de altura 9 y una ruta dada" 
-    (Tru (replicate 9 (newS 9)) route) 
+    (newT (replicate 9 (newS 9)) route) 
     (newT 9 9 route))
 
 testNewT2 ::Test
 testNewT2 = TestCase (assertEqual 
     "Se puede crear un nuevo camión con 9 bahías de altura 9 y una ruta dada" 
-    (Tru (replicate 9 (newS 9)) routeEmpty) 
+    (newT (replicate 9 (newS 9)) routeEmpty) 
     (newT 9 9 routeEmpty))
 
 -- Test de freeCellsT
@@ -57,37 +58,31 @@ testFreeCellsT = TestCase (assertEqual "Celdas disponibles en el camión" 30 (fr
 -- Test cargar un palet en el camión vacío
 testLoadTEmpty :: Test
 testLoadTEmpty = TestCase (assertEqual "Cargar palet en camión vacío"
-                      (Tru [Sta [p1] 10, Sta [] 10, Sta [] 10] route)
+                      (newT [Sta [p1] 10, Sta [] 10, Sta [] 10] route)
                       (loadT truck1 p1))
 
 -- Test cargar dos palets en el mismo stack
 testLoadTStack :: Test
 testLoadTStack = TestCase (assertEqual "Cargar dos palets en el mismo stack"
-                      (Tru [Sta [p1, p2] 10, Sta [] 10, Sta [] 10] route)
+                      (newT [Sta [p1, p2] 10, Sta [] 10, Sta [] 10] route)
                       (loadT (loadT truck1 p1) p2))
-
--- -- Test cargar en stacks diferentes si la ciudad cambia
--- testLoadTDifferentStack :: Test
--- testLoadTDifferentStack = TestCase (assertEqual "Cargar en otro stack si la ciudad es diferente"
---                       (Tru [Sta [p1] 10, Sta [p3] 10, Sta [] 10] route)
---                       (loadT (loadT truck1 p1) p3))
 
 -- Test intentar cargar cuando excede el peso permitido
 testLoadTWeightLimit :: Test
 testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
-                      (Tru [Sta [p1, p4] 10, Sta [p6] 10, Sta [] 10] route)  -- No cambia porque p4 sobrepasa el límite
+                      (newT [Sta [p1, p4] 10, Sta [p6] 10, Sta [] 10] route)  -- No cambia porque p4 sobrepasa el límite
                       (loadT(loadT (loadT truck1 p1) p4) p6))
 
 -- Test descargar un palet correctamente
 testUnloadT :: Test
 testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad 'Madrid'"
-                      (Tru [Sta [] 10, Sta [p2] 10, Sta [p3] 10] route2)
+                      (newT [Sta [] 10, Sta [p2] 10, Sta [p3] 10] route2)
                       (unloadT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route) "Madrid"))
 
 -- Test intentar descargar cuando la ciudad no tiene palets
 testUnloadTNoPalets :: Test
 testUnloadTNoPalets = TestCase (assertEqual "Intentar descargar donde no hay palets"
-                      (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)
+                      (newT [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route)
                       (unloadT (Tru [Sta [p1] 10, Sta [p2] 10, Sta [p3] 10] route) "Sevilla"))  -- No hay palets en Sevilla
 
 -- Test peso neto del camión
@@ -103,10 +98,8 @@ testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquet
   where
     -- Camión inicial
     initialTruck = newT 3 10 route 
-
     -- Primera carga de 5 paquetes
     truckAfterFirstLoad = foldl loadT initialTruck [p1, p2, p3, p4, p5]
-
     -- Primera descarga de cada paquete
     truckAfterFirstUnload = foldl unloadT truckAfterFirstLoad ["Madrid", "Valencia", "Barcelona"]
     -- Estado esperado del camión al final (vacío porque se descargó todo)

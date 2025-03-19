@@ -1,4 +1,4 @@
-module Stack ( Stack(..), newS, freeCellsS, stackS, netS, holdsS, popS )
+module Stack ( Stack, newS, freeCellsS, stackS, netS, holdsS, popS )
   where
 
 import Palet
@@ -20,16 +20,13 @@ getLastP [x] = x
 getLastP (_:xs) = getLastP xs     
 getLastP [] = error "Empty stack" 
 
-
-holdsS :: Stack -> Palet -> Route -> Bool -- indica si la pila puede aceptar el palet considerando las ciudades en la ruta
-holdsS (Sta [] _) _ _ = True 
-holdsS (Sta palets _) new_palet (Rou cities) = 
-  inOrderR (Rou (reverse cities)) (destinationP new_palet) (destinationP (getLastP palets))
-
-
 getCities :: Stack -> [String] -- Devuelve una lista de todas las ciudades de los palets en la pila.
 getCities (Sta palets _) = [destinationP p | p <- palets]  
 
+holdsS :: Stack -> Palet -> Route -> Bool
+holdsS (Sta [] _) _ _ = True
+holdsS (Sta palets _) new_palet route =
+  inOrderR route (destinationP new_palet) (destinationP (getLastP palets))
 
 stackS :: Stack -> Palet -> Stack
 stackS (Sta palets capacity) palet
@@ -41,8 +38,5 @@ stackS (Sta palets capacity) palet
   where
     cities = getCities (Sta palets capacity)
 
-    
 popS :: Stack -> String -> Stack  -- quita del tope los paletes con destino en la ciudad indicada
 popS (Sta palets capacity) city = Sta [p | p <- palets, destinationP p /= city] capacity
-
-

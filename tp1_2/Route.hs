@@ -1,4 +1,4 @@
-module Route ( Route (..), newR, inOrderR, inRouteR)
+module Route ( Route, newR, inOrderR, inRouteR)
   where
 import Data.List (elemIndex)
 
@@ -17,9 +17,8 @@ getCity (x:xs) city1 city2
   | x == city2 = False 
   | otherwise = getCity xs city1 city2  
 
-
-inOrderR :: Route -> String -> String -> Bool -- indica si la primer ciudad consultada esta antes que la segunda ciudad en la ruta
-inOrderR (Rou cs) city1 city2 
+inOrderR :: Route -> String -> String -> Bool
+inOrderR (Rou cs) city1 city2
     | not (inRouteR (Rou cs) city1) = False  
     | not (inRouteR (Rou cs) city2) = False 
-    | otherwise = getCity cs city1 city2 
+    | otherwise = getCity (reverse cs) city1 city2  

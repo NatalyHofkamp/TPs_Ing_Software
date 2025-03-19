@@ -1,4 +1,4 @@
-module Truck ( Truck (..), newT, freeCellsT, loadT, unloadT, netT )
+module Truck ( Truck, newT, freeCellsT, loadT, unloadT, netT )
   where
 
 import Palet
@@ -22,14 +22,12 @@ loadT (Tru (s:ss) route) (palet)
     | otherwise = let Tru newStacks newRoute = loadT (Tru ss route) palet 
                   in Tru (s : newStacks) newRoute  
 
-
 unloadT :: Truck -> String -> Truck
-unloadT (Tru stacks (Rou (city : cities))) currentCity
-    | city == currentCity = Tru newStacks (Rou cities) 
-    | otherwise = Tru newStacks (Rou (city:cities)) 
+unloadT (Tru stacks route) city
+    | inRouteR route city = Tru newStacks route
+    | otherwise = Tru stacks route
   where
-    newStacks = map (`popS` currentCity) stacks 
-
+    newStacks = map (`popS` city) stacks 
 
 netT :: Truck -> Int                  -- responde el peso neto en toneladas de los paletes en el camion
 netT (Tru stacks _) = sum (map netS stacks)
