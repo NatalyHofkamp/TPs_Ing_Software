@@ -7,16 +7,16 @@ import Route
 -- Palets de prueba
 p1, p2, p3, p4, p5, p6 :: Palet
 p1 = newP "Pisa" 3 
-p2 = newP " Bologna" 2 
-p3 = newP "Catania" 1 
+p2 = newP "Bologna" 2 
+p3 = newP "Catania" 3 
 p4 = newP "Pisa" 4
 p5 = newP "Venecia" 5
 p6 = newP "Catania" 8
-
+p7 = newP "Catania" 1
 -- Rutas de prueba
 route, route2, routeEmpty :: Route
 route = newR ["Pisa", "Bologna", "Catania"]
-route2 = newR ["Bologna", "Catania"]
+route2 = newR ["Catania","Bologna"]
 routeEmpty = newR []
 
 -- Camiones de prueba
@@ -25,8 +25,7 @@ truck2 = loadT truck1 p1
 truck3 = newT 1 10 route
 truck4 = loadT truck3 p1 
 truck5 = newT 1 10 routeEmpty
-
-
+truck6 = newT 1 2 route2
 -- Prueba de creación de camión con ruta
 testNewT :: Test
 testNewT = TestCase (assertEqual 
@@ -37,9 +36,9 @@ testNewT = TestCase (assertEqual
 -- Prueba de creación de camión sin ruta
 testNewT2 :: Test
 testNewT2 = TestCase (assertEqual 
-    "Crear un camión con 3 bahías, altura 10 y sin ruta" 
+    "Camión sin ruta se crea pero no carga palets" 
     (newT 3 10 routeEmpty) 
-    (newT 3 10 routeEmpty))
+    (loadT (newT 3 10 routeEmpty) p1))
 
 -- Test de celdas libres
 testFreeCellsT :: Test
@@ -56,11 +55,11 @@ testZeroCapacityTruck = TestCase (assertEqual "Camión con capacidad 0 no debe p
                        (newT 0 10 route)  -- Camión sin capacidad para carga
                        (loadT (newT 0 10 route) p1))  -- No debería permitir carga
                        
--- Test cargar dos palets en el mismo stack
 testLoadTStack :: Test
-testLoadTStack = TestCase (assertEqual "Cargar dos palets en el mismo stack"
-                      (loadT (loadT truck1 p1) p2)
-                      (loadT (loadT truck1 p1) p2))
+testLoadTStack = TestCase (assertEqual "Camión lleno no acepta más paquetes"
+                      (loadT (loadT truck6 p2) p3) 
+                      (loadT (loadT (loadT truck6 p2) p3) p7))
+
 
 -- Test cargar un camion sin ruta
 testLoadEmptyRoute :: Test
@@ -77,7 +76,7 @@ testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
 
 -- Test descargar un palet correctamente
 testUnloadT :: Test
-testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad 'Pisa'"
+testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad Pisa"
                       (unloadT truck2 "Pisa")
                       (newT 3 10 route))
 
@@ -95,23 +94,19 @@ testNetT = TestCase (assertEqual "Peso neto de los palets en el camión"
 
 -- Test de carga y descarga repetida
 testLoadUnloadMultipleTimes :: Test
-testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquetes dos veces"
+testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquetes"
     finalTruck
     truckAfterFirstUnload)
   where
-    -- Camión inicial
     initialTruck = newT 3 10 route 
-    -- Primera carga de 5 paquetes
     truckAfterFirstLoad = foldl loadT initialTruck [p1, p2, p3, p4, p5]
-    -- Primera descarga de cada paquete
     truckAfterFirstUnload = foldl unloadT truckAfterFirstLoad ["Pisa", "Bologna", "Catania"]
-    -- Estado esperado del camión al final (vacío porque se descargó todo)
     finalTruck = newT 3 10 route
 
 -- Test de camión con capacidad negativa
 testInvalidTruck :: Test
-testInvalidTruck = TestCase (assertEqual "Crear camión con capacidad negativa (debería manejarlo correctamente)"
-                      (newT 0 0 route)  -- Si `newT` maneja valores negativos, debería establecer 0
+testInvalidTruck = TestCase (assertEqual "Camión con capacidad negativa == camión con capacidad nula"
+                      (newT 0 0 route)  
                       (newT (-2) 0 route))
 
 
