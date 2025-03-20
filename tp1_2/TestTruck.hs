@@ -1,5 +1,3 @@
-module TestsT where
-
 import Test.HUnit
 import Truck
 import Palet

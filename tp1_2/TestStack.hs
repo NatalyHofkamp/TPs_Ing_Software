@@ -46,13 +46,11 @@ testFreeCellsS = TestCase (assertEqual "Celdas disponibles" 1 (freeCellsS stack1
 testNetS :: Test
 testNetS = TestCase (assertEqual "Peso neto de la pila" 6 (netS stack1f))
 
--- -- Test de getLastP
--- testGetLastP :: Test
--- testGetLastP = TestCase (assertEqual "Último palet de la pila" p2 (getLastP stack1))
 
 -- Test de holdsS
 testHoldsS :: Test
 testHoldsS = TestCase (assertEqual "Si se puede apilar el palet en la pila" True (holdsS stack1f p3 route1))
+
 
 testHoldsSWrongCity :: Test
 testHoldsSWrongCity = TestCase (assertEqual "No permitir apilar palet si la ciudad no está en la ruta"
