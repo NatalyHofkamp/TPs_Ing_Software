@@ -17,6 +17,7 @@ p7 = newP "Catania" 1
 route, route2, routeEmpty :: Route
 route = newR ["Pisa", "Bologna", "Catania"]
 route2 = newR ["Catania","Bologna"]
+route3 = (newR ["Pisa", "Catania"])
 routeEmpty = newR []
 
 -- Camiones de prueba
@@ -99,14 +100,15 @@ testNetT = TestCase (assertEqual "Peso neto de los palets en el camión"
 
 -- Test de carga y descarga repetida
 testLoadUnloadMultipleTimes :: Test
-testLoadUnloadMultipleTimes = TestCase (assertEqual "Cargar y descargar 5 paquetes"
+testLoadUnloadMultipleTimes = TestCase (assertEqual "Intento de 5 paquetes, carga de 3 y descarga de dos"
     finalTruck
     truckAfterFirstUnload)
   where
-    initialTruck = newT 3 10 route 
+    initialTruck = newT 3 10 route3
     truckAfterFirstLoad = foldl loadT initialTruck [p1, p2, p3, p4, p5]
-    truckAfterFirstUnload = foldl unloadT truckAfterFirstLoad ["Pisa", "Bologna", "Catania"]
-    finalTruck = newT 3 10 route
+    truckAfterFirstUnload = unloadT truckAfterFirstLoad "Pisa"
+    finalTruck =  loadT initialTruck p3
+
 
 -- Test de camión con capacidad negativa
 testInvalidTruck :: Test
