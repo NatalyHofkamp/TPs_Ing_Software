@@ -13,7 +13,7 @@ testNetP2 :: Test
 testNetP2 = TestCase (assertEqual "Si se puede crear un Palet con peso negativo" (-6) (netP (newP "Rio Cuarto" (-6))))
 
 testNetP3 :: Test
-testNetP3 = TestCase (assertEqual "Si se puede crear un nuevo Palet" 11 (netP (newP "Rio Cuarto" 11)))
+testNetP3 = TestCase (assertEqual "Si se puede crear un Palet con peso cero" 0 (netP (newP "Rio Cuarto" 0)))
 
 
 runTests :: IO Counts
