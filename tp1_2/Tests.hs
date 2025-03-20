@@ -5,13 +5,13 @@ import Route
 
 -- Crear palets de prueba
 p1 :: Palet
-p1 = newP "Madrid" 5
+p1 = newP "Cork" 5
 
 p2 :: Palet
-p2 = newP "Barcelona" 1
+p2 = newP "Galway" 1
 
 p3 :: Palet
-p3 = newP "Valencia" 3
+p3 = newP "Belfast" 3
 
 palets1 = [p1, p2]
 palets2 = [p1, p2, p3]
@@ -21,7 +21,6 @@ apilarPalets stack [] = stack  -- Caso base: si no hay más palets, se devuelve 
 apilarPalets stack (p:ps) = apilarPalets (stackS stack p) ps  -- Apila y sigue con los restantes
 
 stack1 = newS 3
-palets = [p1, p2, p3]
 stack1f = apilarPalets stack1 palets1
 
 stack2 = newS 3
@@ -31,7 +30,7 @@ stack3 = newS 3
 stack3f = apilarPalets stack3 palets2
 
 route1 :: Route
-route1 = newR ["Madrid", "Barcelona", "Valencia"]
+route1 = newR ["Cork", "Galway", "Belfast"]
 
 
 testNewS :: Test
@@ -59,7 +58,7 @@ testStackS = TestCase (assertEqual "Agregar un palet a la pila" stack3f (stackS 
 
 -- Test de popS
 testPopS :: Test
-testPopS = TestCase (assertEqual "Quitar un palet de la pila" stack2f (popS stack1f "Valencia"))
+testPopS = TestCase (assertEqual "Quitar un palet de la pila" stack2f (popS stack1f "Belfast"))
 
 
 -- Función para ejecutar todos los tests
