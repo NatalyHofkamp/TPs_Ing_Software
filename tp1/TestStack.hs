@@ -4,13 +4,8 @@ import Palet
 import Route
 
 -- Crear palets de prueba
-p1 :: Palet
 p1 = newP "Cork" 5
-
-p2 :: Palet
 p2 = newP "Galway" 1
-
-p3 :: Palet
 p3 = newP "Belfast" 3
 
 palets1 = [p1, p2]
@@ -31,7 +26,6 @@ stack3f = apilarPalets stack3 palets2
 
 emptyStack = newS 3
 
-route1 :: Route
 route1 = newR ["Cork", "Galway", "Belfast"]
 
 

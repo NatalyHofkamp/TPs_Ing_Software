@@ -19,15 +19,11 @@ route = newR ["Pisa", "Bologna", "Catania"]
 route2 = newR ["Bologna", "Catania"]
 routeEmpty = newR []
 
--- Camión de prueba
-truck1 :: Truck
+-- Camiones de prueba
 truck1 = newT 3 10 route
-
 truck2 = loadT truck1 p1 
-
 truck3 = newT 1 10 route
 truck4 = loadT truck3 p1 
-
 truck5 = newT 1 10 routeEmpty
 
 
@@ -59,6 +55,7 @@ testZeroCapacityTruck :: Test
 testZeroCapacityTruck = TestCase (assertEqual "Camión con capacidad 0 no debe permitir carga"
                        (newT 0 10 route)  -- Camión sin capacidad para carga
                        (loadT (newT 0 10 route) p1))  -- No debería permitir carga
+                       
 -- Test cargar dos palets en el mismo stack
 testLoadTStack :: Test
 testLoadTStack = TestCase (assertEqual "Cargar dos palets en el mismo stack"

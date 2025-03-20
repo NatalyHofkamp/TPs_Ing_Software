@@ -3,14 +3,14 @@ import Palet
 
 
 testDestionationP :: Test
-testDestionationP = TestCase (assertEqual "Si puede devolver la ciudad destino de un palet" "Dublin" (destinationP (newP "Dublin" 3)))
+testDestionationP = TestCase (assertEqual "Si puede devolver la ciudad destino de un palet" "Rio Primero" (destinationP (newP "Rio Primero" 3)))
 
 testNetP :: Test
-testNetP = TestCase (assertEqual "Si se puede devolver el peso de un palet" 6 (netP (newP "Rio Cuarto" 6)))
+testNetP = TestCase (assertEqual "Si se puede devolver el peso de un palet" 6 (netP (newP "Rio Segundo" 6)))
 
 
 testNetP2 :: Test
-testNetP2 = TestCase (assertEqual "Si se puede crear un Palet con peso negativo" (-6) (netP (newP "Rio Cuarto" (-6))))
+testNetP2 = TestCase (assertEqual "Si se puede crear un Palet con peso negativo" (-6) (netP (newP "Rio Tercero" (-6))))
 
 testNetP3 :: Test
 testNetP3 = TestCase (assertEqual "Si se puede crear un Palet con peso cero" 0 (netP (newP "Rio Cuarto" 0)))
