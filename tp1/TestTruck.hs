@@ -26,6 +26,11 @@ truck3 = newT 1 10 route
 truck4 = loadT truck3 p1 
 truck5 = newT 1 10 routeEmpty
 truck6 = newT 1 2 route2
+
+truck7 = newT 3 2 route2
+
+
+
 -- Prueba de creación de camión con ruta
 testNewT :: Test
 testNewT = TestCase (assertEqual 
@@ -47,13 +52,13 @@ testFreeCellsT = TestCase (assertEqual "Celdas disponibles en el camión" 30 (fr
 -- Test cargar un palet en el camión vacío
 testLoadTEmpty :: Test
 testLoadTEmpty = TestCase (assertEqual "Cargar palet en camión vacío"
-                      truck2  -- Ajustar según la implementación
+                      truck2
                       (loadT truck1 p1))
 
 testZeroCapacityTruck :: Test
 testZeroCapacityTruck = TestCase (assertEqual "Camión con capacidad 0 no debe permitir carga"
-                       (newT 0 10 route)  -- Camión sin capacidad para carga
-                       (loadT (newT 0 10 route) p1))  -- No debería permitir carga
+                       (newT 0 10 route) 
+                       (loadT (newT 0 10 route) p1)) 
                        
 testLoadTStack :: Test
 testLoadTStack = TestCase (assertEqual "Camión lleno no acepta más paquetes"
@@ -64,14 +69,14 @@ testLoadTStack = TestCase (assertEqual "Camión lleno no acepta más paquetes"
 -- Test cargar un camion sin ruta
 testLoadEmptyRoute :: Test
 testLoadEmptyRoute = TestCase (assertEqual "No cargar si el camión tiene una ruta vacia"
-                       truck5  -- El camión no debería cambiar
+                       truck5  
                        (loadT truck5 p2))
 
 
 -- Test intentar cargar cuando excede el peso permitido
 testLoadTWeightLimit :: Test
 testLoadTWeightLimit = TestCase (assertEqual "No cargar si excede el peso"
-                      truck4  -- Debería permanecer igual si se excede el peso
+                      truck4  
                       (loadT truck4 p6))
 
 -- Test descargar un palet correctamente
@@ -83,7 +88,7 @@ testUnloadT = TestCase (assertEqual "Descargar palets en la ciudad Pisa"
 -- Test intentar descargar donde no hay palets
 testUnloadTNoPalets :: Test
 testUnloadTNoPalets = TestCase (assertEqual "Intentar descargar donde no hay palets"
-                      truck1  -- No cambia nada
+                      truck1  
                       (unloadT truck1 "Derry"))
 
 -- Test de peso neto del camión
