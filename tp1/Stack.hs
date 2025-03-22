@@ -20,12 +20,12 @@ getLastP [x] = x
 getLastP (_:xs) = getLastP xs     
 getLastP [] = error "Empty stack" 
 
-holdsS :: Stack -> Palet -> Route -> Bool
+holdsS :: Stack -> Palet -> Route -> Bool -- indica si la pila puede aceptar el palet considerando las ciudades en la ruta
 holdsS (Sta [] _) _ _ = True
 holdsS (Sta palets _) new_palet route =
   inOrderR route (destinationP new_palet) (destinationP (getLastP palets))
 
-stackS :: Stack -> Palet -> Stack
+stackS :: Stack -> Palet -> Stack -- apila el palet indicado en la pila
 stackS (Sta palets capacity) palet
   | netP palet > 0 
     && freeCellsS (Sta palets capacity) > 0

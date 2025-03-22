@@ -10,14 +10,14 @@ newR cities = Rou cities
 inRouteR :: Route -> String -> Bool -- indica si la ciudad consultada está en la ruta
 inRouteR (Rou cs) city  = city `elem` cs
 
-getCity :: [String] -> String -> String -> Bool 
+getCity :: [String] -> String -> String -> Bool -- Devuelve si un string está antes que otro en una lista
 getCity [] _ _ = False  
 getCity (x:xs) city1 city2
   | x == city1 = True 
   | x == city2 = False 
   | otherwise = getCity xs city1 city2  
 
-inOrderR :: Route -> String -> String -> Bool
+inOrderR :: Route -> String -> String -> Bool -- indica si la primer ciudad consultada esta antes que la segunda ciudad en la ruta
 inOrderR (Rou cs) city1 city2
     | not (inRouteR (Rou cs) city1) = False  
     | not (inRouteR (Rou cs) city2) = False 

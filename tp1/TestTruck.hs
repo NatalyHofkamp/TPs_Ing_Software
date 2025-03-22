@@ -30,8 +30,6 @@ truck6 = newT 1 2 route2
 
 truck7 = newT 3 2 route2
 
-
-
 -- Prueba de creación de camión con ruta
 testNewT :: Test
 testNewT = TestCase (assertEqual 
@@ -123,6 +121,5 @@ tests = TestList [testNewT, testNewT2, testFreeCellsT, testLoadTEmpty,testZeroCa
                   testLoadTWeightLimit, testUnloadT, testUnloadTNoPalets, testNetT, 
                   testLoadUnloadMultipleTimes, testInvalidTruck]
 
--- Función principal para ejecutar los tests
 main :: IO Counts
 main = runTestTT tests

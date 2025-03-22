@@ -12,8 +12,8 @@ palets1 = [p1, p2]
 palets2 = [p1, p2, p3]
 
 apilarPalets :: Stack -> [Palet] -> Stack
-apilarPalets stack [] = stack  -- Caso base: si no hay más palets, se devuelve el stack final
-apilarPalets stack (p:ps) = apilarPalets (stackS stack p) ps  -- Apila y sigue con los restantes
+apilarPalets stack [] = stack  
+apilarPalets stack (p:ps) = apilarPalets (stackS stack p) ps  
 
 stack1 = newS 3
 stack1f = apilarPalets stack1 palets1
