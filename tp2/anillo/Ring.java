@@ -1,38 +1,126 @@
 package anillo;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
-public class Ring {
-    LinkedList<Object> listaObjetos;
-    int indiceActual;
-    public Ring() {
-        listaObjetos = new LinkedList<>();
-        indiceActual = -1;
+abstract class Nodo {
+    abstract Nodo add(Object valor);
+    abstract Nodo next();
+    abstract Nodo remove();
+    abstract Object getValor();
+}
+
+class NodoVacio extends Nodo {
+
+    Nodo add(Object valor) {
+        return new NodoUno(valor);
     }
 
-    public Ring next() {
-        indiceActual -= 1;
-        System.out.println("Elemento siguiente: " + listaObjetos.get((int) ((indiceActual % listaObjetos.size() + listaObjetos.size()) % listaObjetos.size())
-        ));
+    Nodo next() {
         return this;
     }
 
-    public Object current() {
-        System.out.println("Elemento actual: " + listaObjetos.get((int) ((indiceActual % listaObjetos.size() + listaObjetos.size()) % listaObjetos.size())
-        ));
-        return listaObjetos.get((int) ((indiceActual % listaObjetos.size() + listaObjetos.size()) % listaObjetos.size())
-        );
+    Nodo remove() {
+        return this;
     }
 
-    public Ring add( Object cargo ) {
-        listaObjetos.add(cargo);
-        indiceActual +=  1;
+    Object getValor() {
+        throw new IllegalStateException("El anillo está vacío.");
+    }
+}
+
+
+class NodoUno extends Nodo {
+
+    private Object valor;
+
+    NodoUno(Object valor) {
+        this.valor = valor;
+    }
+
+    Nodo add(Object nuevoValor) {
+        NodoNormal nuevo = new NodoNormal(nuevoValor);
+        NodoNormal actual = new NodoNormal(valor);
+
+        nuevo.next = actual;
+        nuevo.prev = actual;
+        actual.next = nuevo;
+        actual.prev = nuevo;
+
+        return nuevo;
+    }
+
+    Nodo next() {
+        return this;
+    }
+
+    Nodo remove() {
+        return new NodoVacio();
+    }
+
+    Object getValor() {
+        return valor;
+    }
+}
+
+
+
+class NodoNormal extends Nodo {
+
+    Object valor;
+    NodoNormal next;
+    NodoNormal prev;
+
+    NodoNormal(Object valor) {
+        this.valor = valor;
+    }
+
+    Nodo add(Object nuevoValor) {
+        NodoNormal nuevo = new NodoNormal(nuevoValor);
+
+        nuevo.next = this.next;
+        nuevo.prev = this;
+        this.next.prev = nuevo;
+        this.next = nuevo;
+
+        return nuevo;
+    }
+
+    Nodo next() {
+        return next;
+    }
+
+    Nodo remove() {
+
+    }
+
+    Object getValor() {
+        return valor;
+    }
+}
+
+
+public class Ring {
+
+    private Nodo actual;
+
+    public Ring() {
+        this.actual = new NodoVacio();
+    }
+
+    public Ring add(Object cargo) {
+        actual = actual.add(cargo);
+        return this;
+    }
+
+    public Ring next() {
+        actual = actual.next();
         return this;
     }
 
     public Ring remove() {
-        listaObjetos.remove(indiceActual);
-        indiceActual +=  1;
+        actual = actual.remove();
         return this;
+    }
+
+    public Object current() {
+        return actual.getValor();
     }
 }
