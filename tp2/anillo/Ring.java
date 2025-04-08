@@ -1,21 +1,21 @@
 package anillo;
 
-abstract class Nodo {
-    Nodo next;
-    Nodo prev;
-    abstract Nodo add(Object valor);
-    abstract Nodo next();
-    abstract Nodo remove();
+abstract class Node {
+    Node next;
+    Node prev;
+    abstract Node add(Object value);
+    abstract Node next();
+    abstract Node remove();
     abstract Object getValue();
 }
 
-class NodoVacio extends Nodo {
+class EmptyNode extends Node {
 
-    Nodo add(Object valor) {return  new NodoUno(valor);
+    Node add(Object valor) {return  new OneNode(valor);
     }
-    Nodo next() {throw new IllegalStateException("El anillo está vacío");
+    Node next() {throw new IllegalStateException("El anillo está vacío");
     }
-    Nodo remove() {
+    Node remove() {
         return this;
     }
     Object getValue() {
@@ -24,48 +24,48 @@ class NodoVacio extends Nodo {
 }
 
 
-class NodoUno extends Nodo {
-    private Object valor;
-    NodoUno(Object valor) {
-        this.valor = valor;
+class OneNode extends Node {
+    private Object value;
+    OneNode(Object valor) {
+        this.value = valor;
         this.next = this;
         this.prev = this;
     }
-    Nodo add(Object nuevoValor) {
-        NodoNormal nuevo = new NodoNormal(nuevoValor);
-        NodoNormal current = new NodoNormal(this.valor);
-        nuevo.next = current;
-        nuevo.prev = current;
-        current.next = nuevo;
-        current.prev = nuevo;
-        return nuevo;
+    Node add(Object nuevoValor) {
+        NormalNode aux = new NormalNode(nuevoValor);
+        NormalNode current = new NormalNode(this.value);
+        aux.next = current;
+        aux.prev = current;
+        current.next = aux;
+        current.prev = aux;
+        return aux;
     }
-    Nodo next() {return this.next;}
-    Nodo remove() {return new NodoVacio(); }
+    Node next() {return this.next;}
+    Node remove() {return new EmptyNode(); }
     Object getValue() {
-        return valor;
+        return value;
     }
 }
 
 
 
-class NodoNormal extends Nodo {
+class NormalNode extends Node {
     Object valor;
-    NodoNormal(Object valor) { this.valor = valor;    }
+    NormalNode(Object valor) { this.valor = valor;    }
 
-    Nodo add(Object nuevoValor) {
-        NodoNormal nuevo = new NodoNormal(nuevoValor);
-        nuevo.next = this.next;
-        nuevo.prev = this;
-        this.next.prev = nuevo;
-        this.next = nuevo;
-        return nuevo;
+    Node add(Object nuevoValor) {
+        NormalNode aux = new NormalNode(nuevoValor);
+        aux.next = this.next;
+        aux.prev = this;
+        this.next.prev = aux;
+        this.next = aux;
+        return aux;
     }
 
-    Nodo next() {
+    Node next() {
         return this.prev;
     }
-    Nodo remove() { return this.prev; }
+    Node remove() { return this.prev; }
     Object getValue() {
         return valor;
     }
@@ -73,27 +73,27 @@ class NodoNormal extends Nodo {
 
 
 public class Ring {
-    private Nodo actual;
+    private Node curr;
     public Ring() {
-        this.actual = new NodoVacio();
+        this.curr = new EmptyNode();
     }
 
     public Ring add(Object cargo) {
-        actual = actual.add(cargo);
+        curr = curr.add(cargo);
         return this;
     }
 
     public Ring next() {
-        actual = actual.next();
+        curr = curr.next();
         return this;
     }
 
     public Ring remove() {
-        actual = actual.remove();
+        curr = curr.remove();
         return this;
     }
 
     public Object current() {
-        return actual.getValue();
+        return curr.getValue();
     }
 }
