@@ -1,4 +1,6 @@
 package anillo;
+
+import java.time.LocalDate;
 import java.util.Stack;
 
 abstract class Node {
@@ -20,17 +22,22 @@ class EmptyNode extends Node {
     }
 
     Node remove() {
-        return this;
+        throw new IllegalStateException("El anillo está vacío");
     }
 
     Object getValue() {
         throw new IllegalStateException("El anillo está vacío.");
     }
+
+    @Override
+    public String toString() {
+        return "EmptyNode";
+    }
 }
 
 class OneNode extends Node {
-    private Object value;
 
+    private Object value;
     OneNode(Object valor) {
         this.value = valor;
         this.next = this;
@@ -39,36 +46,35 @@ class OneNode extends Node {
 
     Node add(Object nuevoValor) {
         OneNode nuevo = new OneNode(nuevoValor);
-
         nuevo.next = this.next;
         nuevo.prev = this;
-
         this.next.prev = nuevo;
         this.next = nuevo;
-
         return nuevo;
     }
 
-
     Node next() {
-        return this.prev;
+        return this.prev; // el anillo gira hacia atrás
     }
 
     Node remove() {
-        this.prev.next = this.prev;
-        this.next.prev = this.next;
+        this.prev.next = this.next;
+        this.next.prev = this.prev;
         return this.prev;
     }
 
     Object getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "OneNode(" + value + ")";
+    }
 }
 
-
-
 public class Ring {
-    private Stack<Node> stack = new Stack<>();
+    private final Stack<Node> stack = new Stack<>();
     private Node curr;
 
     public Ring() {
@@ -79,23 +85,32 @@ public class Ring {
     public Ring add(Object value) {
         curr = curr.add(value);
         stack.push(curr);
+        System.out.println("add -> curr: " + curr);
         return this;
     }
 
     public Ring next() {
         curr = curr.next();
+        stack.push(curr);
+        System.out.println("next -> curr: " + curr);
         return this;
     }
 
     public Ring remove() {
-        curr.remove();
-        stack.remove(curr);               // quitamos el nodo actual del historial
-        curr = stack.peek();       // si aún hay algo, ese es el nuevo actual
+        System.out.println("removeantes -> curr: " + curr);
+        curr = curr.remove();   // esto devuelve el nodo anterior en el anillo
+        stack.pop();            // quitamos del historial el nodo eliminado
+        stack.push(curr);
+        curr = stack.peek();// actualizamos el historial con el nuevo curr
+
+        System.out.println("remove -> curr: " + curr);
         return this;
     }
+
 
     public Object current() {
         return curr.getValue();
     }
 }
+
 
