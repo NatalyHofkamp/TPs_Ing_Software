@@ -1,4 +1,5 @@
 package anillo;
+import java.util.Stack;
 
 abstract class Node {
     Node next;
@@ -10,38 +11,55 @@ abstract class Node {
 }
 
 class EmptyNode extends Node {
+    Node add(Object valor) {
+        return new OneNode(valor);
+    }
 
-    Node add(Object valor) {return  new OneNode(valor);
+    Node next() {
+        throw new IllegalStateException("El anillo está vacío");
     }
-    Node next() {throw new IllegalStateException("El anillo está vacío");
-    }
+
     Node remove() {
         return this;
     }
+
     Object getValue() {
         throw new IllegalStateException("El anillo está vacío.");
     }
 }
 
-
 class OneNode extends Node {
     private Object value;
+
     OneNode(Object valor) {
         this.value = valor;
         this.next = this;
         this.prev = this;
     }
+
     Node add(Object nuevoValor) {
-        NormalNode aux = new NormalNode(nuevoValor);
-        NormalNode current = new NormalNode(this.value);
-        aux.next = current;
-        aux.prev = current;
-        current.next = aux;
-        current.prev = aux;
-        return aux;
+        OneNode nuevo = new OneNode(nuevoValor);
+
+        nuevo.next = this.next;
+        nuevo.prev = this;
+
+        this.next.prev = nuevo;
+        this.next = nuevo;
+
+        return nuevo;
     }
-    Node next() {return this.next;}
-    Node remove() {return new EmptyNode(); }
+
+
+    Node next() {
+        return this.prev;
+    }
+
+    Node remove() {
+        this.prev.next = this.prev;
+        this.next.prev = this.next;
+        return this.prev;
+    }
+
     Object getValue() {
         return value;
     }
@@ -49,37 +67,18 @@ class OneNode extends Node {
 
 
 
-class NormalNode extends Node {
-    Object valor;
-    NormalNode(Object valor) { this.valor = valor;    }
-
-    Node add(Object nuevoValor) {
-        NormalNode aux = new NormalNode(nuevoValor);
-        aux.next = this.next;
-        aux.prev = this;
-        this.next.prev = aux;
-        this.next = aux;
-        return aux;
-    }
-
-    Node next() {
-        return this.prev;
-    }
-    Node remove() { return this.prev; }
-    Object getValue() {
-        return valor;
-    }
-}
-
-
 public class Ring {
+    private Stack<Node> stack = new Stack<>();
     private Node curr;
+
     public Ring() {
-        this.curr = new EmptyNode();
+        curr = new EmptyNode();
+        stack.push(curr);
     }
 
-    public Ring add(Object cargo) {
-        curr = curr.add(cargo);
+    public Ring add(Object value) {
+        curr = curr.add(value);
+        stack.push(curr);
         return this;
     }
 
@@ -89,7 +88,9 @@ public class Ring {
     }
 
     public Ring remove() {
-        curr = curr.remove();
+        curr.remove();
+        stack.remove(curr);               // quitamos el nodo actual del historial
+        curr = stack.peek();       // si aún hay algo, ese es el nuevo actual
         return this;
     }
 
@@ -97,3 +98,4 @@ public class Ring {
         return curr.getValue();
     }
 }
+
