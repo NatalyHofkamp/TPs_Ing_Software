@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Player {
@@ -15,7 +16,7 @@ public class Player {
     }
 
     public List<Card> getHand() {
-        return Collections.unmodifiableList(hand); // seguridad
+        return hand; // seguridad
     }
 
     public void receiveCard(Card card) {
@@ -28,7 +29,7 @@ public class Player {
 
     public Card playCard(Card topCard) {
         for (Card card : hand) {
-            if (card.canBePlayedOn(topCard)) {
+            if (card.PlayOn(topCard) ){
                 hand.remove(card);
                 return card;
             }
@@ -37,6 +38,6 @@ public class Player {
     }
 
     public boolean canPlay(Card topCard) {
-        return hand.stream().anyMatch(card -> card.canBePlayedOn(topCard));
+        return hand.stream().anyMatch(card -> card.PlayOn(topCard));
     }
 }

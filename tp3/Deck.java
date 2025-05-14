@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Deck {
     private final Deque<Card> cartas = new ArrayDeque<>();;
