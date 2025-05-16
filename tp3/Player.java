@@ -5,6 +5,9 @@ import java.util.List;
 public class Player {
     private final String name;
     private final List<Card> hand;
+    public Player next;
+    public Player prev;
+
 
     public Player(String name) {
         this.name = name;

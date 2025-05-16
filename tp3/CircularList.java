@@ -1,27 +1,18 @@
 import java.util.List;
 
-public class CircularList<T> {
-    private static class Node<T> {
-        T value;
-        Node<T> next;
-        Node<T> prev;
+public class CircularList {
 
-        Node(T value) {
-            this.value = value;
-        }
-    }
-
-    private Node<T> current;
+    private Player current;
     private boolean reverse = false;
 
-    public CircularList(List<T> items) {
-        if (items.isEmpty()) throw new IllegalArgumentException("Lista vacía");
+    public CircularList(List<Player> players) {
+        if (players.isEmpty()) throw new IllegalArgumentException("Lista vacía");
 
-        Node<T> first = new Node<>(items.get(0));
-        Node<T> prev = first;
+        Player first = players.get(0);
+        Player prev = first;
 
-        for (int i = 1; i < items.size(); i++) {
-            Node<T> node = new Node<>(items.get(i));
+        for (int i = 1; i < players.size(); i++) {
+            Player node = players.get(i);
             prev.next = node;
             node.prev = prev;
             prev = node;
@@ -34,8 +25,8 @@ public class CircularList<T> {
         current = first;
     }
 
-    public T getCurrent() {
-        return current.value;
+    public Player getCurrent() {
+        return current;
     }
 
     public void next() {
@@ -51,10 +42,9 @@ public class CircularList<T> {
     }
 
     public int size() {
-        // opcional: para usar si querés saber cuántos hay
         int count = 1;
-        Node<T> start = current;
-        Node<T> node = current.next;
+        Player start = current;
+        Player node = current.next;
         while (node != start) {
             count++;
             node = node.next;
@@ -62,3 +52,4 @@ public class CircularList<T> {
         return count;
     }
 }
+
