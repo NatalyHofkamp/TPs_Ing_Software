@@ -3,7 +3,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,8 +13,8 @@ public class GameUNOTest {
     private GameUNO game;
     private Player player1;
     private Player player2;
-    private Card red5;
-    private Card red7;
+    private Carta red5;
+    private Carta red7;
 
     @BeforeEach
     public void setup() {
@@ -24,10 +23,10 @@ public class GameUNOTest {
         player2 = new Player("Bob");
 
         // Crear mazo vacío para test
-        LinkedList<Card> discardPile = new LinkedList<>();
+        LinkedList<Carta> discardPile = new LinkedList<>();
 
         // Crear pila de descarte con una carta roja 5
-        Deque<Card> drawPile = new LinkedList<>();
+        Deque<Carta> drawPile = new LinkedList<>();
         red5 = new NumberCard("Red", 5);
         drawPile.push(red5);
 

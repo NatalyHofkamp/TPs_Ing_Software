@@ -6,6 +6,6 @@ public class SkipCarta extends CartaColor {
 
     @Override
     public void aplicarEfecto(GameUNO juego) {
-        juego.ronda.skipNextPlayer();
+        juego.direccion.skipNextPlayer();
     }
 }

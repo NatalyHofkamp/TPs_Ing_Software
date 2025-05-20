@@ -5,7 +5,7 @@ public class MasDosCarta extends CartaColor {
     }
 
     public void aplicarEfecto(GameUNO juego) {
-        juego.ronda.skipNextPlayer();
+        juego.direccion.saltearJugador();
         juego.repartirCartas(2);
     }
 }

@@ -3,6 +3,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Jugador {
+    Jugador next;
+    Jugador prev;
+
     private String nombre;
     public Deque<Carta> mano =  new LinkedList<>();
 
@@ -22,17 +25,16 @@ public class Jugador {
         mano.add(nuevaCarta);
     }
 
-    public void jugar(GameUNO juego) {
-        Iterator<Carta> it = mano.iterator();
-        while (it.hasNext()) {
-            Carta carta_jugada = it.next();
-            if (carta_jugada.puedeJugarSobre(juego.carta_mesa)) {
-                it.remove();
-                carta_jugada.aplicarEfecto(juego);
-                juego.carta_mesa = carta_jugada;
-                return;
-            }
+    public void jugar(GameUNO juego,Carta carta_elegida) {
+        if (!mano.contains(cartaElegida)) {
+            throw new IllegalArgumentException("La carta no está en la mano del jugador");
         }
-        juego.repartirCartas(1);
-    }
+            if (carta_elegida.puedeJugarSobre(juego.carta_mesa)):
+                carta_elegida.aplicarEfecto(juego);
+            juego.carta_mesa = carta_elegida;
+        else:
+            jugar ( juego, juego.repartirCartas(1))
+
+
+
 }

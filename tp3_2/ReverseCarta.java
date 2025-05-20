@@ -6,6 +6,6 @@ public class ReverseCarta extends CartaColor {
 
     @Override
     public void aplicarEfecto(GameUNO juego) {
-        juego.ronda.reverseTurnOrder();
+        juego.direccion.invertir();
     }
 }

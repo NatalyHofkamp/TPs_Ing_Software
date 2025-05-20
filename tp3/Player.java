@@ -1,10 +1,9 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Player {
     private final String name;
-    private final List<Card> hand;
+    private final List<Carta> hand;
     public Player next;
     public Player prev;
 
@@ -18,11 +17,11 @@ public class Player {
         return name;
     }
 
-    public List<Card> getHand() {
+    public List<Carta> getHand() {
         return hand; // seguridad
     }
 
-    public void receiveCard(Card card) {
+    public void receiveCard(Carta card) {
         hand.add(card);
     }
 
@@ -30,8 +29,8 @@ public class Player {
         return hand.isEmpty();
     }
 
-    public Card playCard(Card topCard) {
-        for (Card card : hand) {
+    public Carta playCard(Carta topCard) {
+        for (Carta card : hand) {
             if (card.PlayOn(topCard) ){
                 hand.remove(card);
                 return card;
@@ -40,7 +39,7 @@ public class Player {
         return null; // No se puede jugar
     }
 
-    public boolean canPlay(Card topCard) {
+    public boolean canPlay(Carta topCard) {
         return hand.stream().anyMatch(card -> card.PlayOn(topCard));
     }
 }

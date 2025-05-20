@@ -1,11 +1,11 @@
 
-public abstract class Card {
+public abstract class Carta {
     protected String color;
 
-    public Card(String color) {
+    public Carta(String color) {
         this.color = color;
     }
-    public abstract boolean PlayOn(Card topCard);
+    public abstract boolean PlayOn(Carta topCard);
     public String getColor() {
         return color;
     }
@@ -13,7 +13,7 @@ public abstract class Card {
 }
 
 
-class NumberCard extends Card {
+class NumberCard extends Carta {
     public int number;
 
     public NumberCard(String color, int number) {
@@ -21,7 +21,7 @@ class NumberCard extends Card {
         this.number = number;
     }
 
-    public boolean PlayOn(Card topCard) {
+    public boolean PlayOn(Carta topCard) {
         return this.color.matches(topCard.getColor()) ||
                 (topCard instanceof NumberCard && this.number == ((NumberCard) topCard).number) ||
                 (topCard instanceof WildCard);
@@ -34,12 +34,12 @@ class NumberCard extends Card {
 }
 
 
-class drawTwoCard extends Card {
+class drawTwoCard extends Carta {
     public drawTwoCard(String color) {
         super(color);
     }
 
-    public boolean PlayOn(Card topCard) {
+    public boolean PlayOn(Carta topCard) {
         return this.color.matches(topCard.getColor()) ||
                 (topCard instanceof WildCard) || (topCard instanceof drawTwoCard);
     }
@@ -52,12 +52,12 @@ class drawTwoCard extends Card {
 
 }
 
-class reverseCard extends Card {
+class reverseCard extends Carta {
     public reverseCard(String color) {
         super(color);
     }
 
-    public boolean PlayOn(Card topCard) {
+    public boolean PlayOn(Carta topCard) {
         return this.color.matches(topCard.getColor()) ||
                 (topCard instanceof WildCard) || (topCard instanceof reverseCard);
     }
@@ -69,12 +69,12 @@ class reverseCard extends Card {
 }
 
 
-class skipCard extends Card {
+class skipCard extends Carta {
     public skipCard(String color) {
         super(color);
     }
 
-    public boolean PlayOn(Card topCard) {
+    public boolean PlayOn(Carta topCard) {
         return this.color.matches(topCard.getColor());
 //        return this.color.matches(topCard.getColor()) ||
 //                (topCard instanceof skipCard)||
@@ -88,13 +88,13 @@ class skipCard extends Card {
     }
 }
 
-class WildCard extends Card {
+class WildCard extends Carta {
     private String color;
     public WildCard() {
         super(null); // aún no tiene color
     }
 
-    public boolean PlayOn(Card topCard) {
+    public boolean PlayOn(Carta topCard) {
         return true;
     }
     public WildCard asColor(String color) {
