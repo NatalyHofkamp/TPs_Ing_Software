@@ -1,3 +1,5 @@
+package tp3;
+
 public abstract class Carta {
     protected String color;  // Puede ser "rojo", "verde", etc. o null si es Wild
     protected String tipo;   // "numero", "+2", "skip", "reverse", "wild"

@@ -1,3 +1,5 @@
+package tp3;
+
 public abstract class CartaColor extends Carta {
 
     public CartaColor(String color, String tipo) {

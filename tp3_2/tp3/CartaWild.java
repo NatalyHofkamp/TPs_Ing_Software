@@ -1,3 +1,5 @@
+package tp3;
+
 public class CartaWild extends Carta {
 
     public CartaWild() {
