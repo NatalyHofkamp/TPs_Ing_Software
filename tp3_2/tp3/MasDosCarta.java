@@ -1,3 +1,5 @@
+package tp3;
+
 public class MasDosCarta extends CartaColor {
 
     public MasDosCarta(String color) {
@@ -5,7 +7,8 @@ public class MasDosCarta extends CartaColor {
     }
 
     public void aplicarEfecto(GameUNO juego) {
-        juego.direccion.saltearJugador();
+        juego.direccion.avanzar(); // saltamos y obtenemos el penalizado
         juego.repartirCartas(2);
     }
+
 }

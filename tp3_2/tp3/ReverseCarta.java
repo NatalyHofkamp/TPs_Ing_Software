@@ -1,3 +1,5 @@
+package tp3;
+
 public class ReverseCarta extends CartaColor {
 
     public ReverseCarta(String color) {
@@ -6,6 +8,7 @@ public class ReverseCarta extends CartaColor {
 
     @Override
     public void aplicarEfecto(GameUNO juego) {
-        juego.direccion.invertir();
+        juego.direccion = juego.direccion.invertir();
+
     }
 }

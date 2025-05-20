@@ -1,3 +1,5 @@
+package tp3;
+
 public class SkipCarta extends CartaColor {
 
     public SkipCarta(String color) {
@@ -6,6 +8,6 @@ public class SkipCarta extends CartaColor {
 
     @Override
     public void aplicarEfecto(GameUNO juego) {
-        juego.direccion.skipNextPlayer();
+        juego.direccion.avanzar();
     }
 }

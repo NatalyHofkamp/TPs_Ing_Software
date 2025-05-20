@@ -1,3 +1,5 @@
+package tp3;
+
 public abstract class Direccion {
     protected Jugador current;
 
@@ -9,26 +11,28 @@ public abstract class Direccion {
         return current;
     }
 
-    public abstract void avanzar();
-
+    // Ahora devuelve el jugador que es saltado (penalizado)
     public void saltearJugador() {
-        avanzar();
-        avanzar();
+        avanzar();              // Avanzamos al jugador penalizado
+        avanzar();              // Avanzamos al siguiente jugador que va a jugar
     }
+
+    public abstract void avanzar();
 
     public abstract Direccion invertir();
 }
 
-public class Derecha extends Direccion {
+
+class Derecha extends Direccion {
 
     public Derecha(Jugador current) {
         super(current);
     }
 
-    @Override
     public void avanzar() {
         current = current.next;
     }
+
 
     @Override
     public Direccion invertir() {
@@ -36,7 +40,7 @@ public class Derecha extends Direccion {
     }
 }
 
-public class Izquierda extends Direccion {
+class Izquierda extends Direccion {
 
     public Izquierda(Jugador current) {
         super(current);
