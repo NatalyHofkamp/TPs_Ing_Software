@@ -84,6 +84,7 @@ public class GameUNOTest2 {
 
         juego.playTurn(masDosRojo);
 
+
         assertEquals(cantidadAntes + 2, siguiente.mano.size());
         assertEquals(siguienteDelSiguiente.getNombre(), juego.getCurrent().getNombre());
     }
@@ -145,4 +146,107 @@ public class GameUNOTest2 {
         // Entonces penaliza con 2 cartas
         assertEquals(3, actual.mano.size());
     }
+    @Test
+    public void testJugadorCantaUNOCorrectamente() {
+        Jugador actual = juego.getCurrent();
+        actual.mano.clear();
+
+        Carta carta1 = new NumeroCarta("Rojo", "7");
+        Carta carta2 = new NumeroCarta("Rojo", "2");
+
+        actual.recibirCarta(carta1);
+        actual.recibirCarta(carta2);
+
+
+        // Se asegura que puede jugar una carta, le deja 1 y canta UNO
+        juego.juegoYcanto(carta1);
+
+        assertEquals(1, actual.mano.size());
+        assertTrue(actual.haCantado());
+    }
+
+    @Test
+    public void testJugadorNoCantaUNORecibePenalidad() {
+        Jugador actual = juego.getCurrent();
+        actual.mano.clear();
+
+        Carta carta1 = new NumeroCarta("Rojo", "7");
+        Carta carta2 = new NumeroCarta("Rojo", "2");
+
+        actual.recibirCarta(carta1);
+        actual.recibirCarta(carta2);
+
+        juego.playTurn(carta1); // no canta UNO
+
+        assertEquals(3, actual.mano.size()); // 1 que le quedó + 2 de penalidad
+    }
+
+    @Test
+    public void testDosJugadoresReverseVuelveAlMismoJugador() {
+        Jugador jugador1 = new Jugador("Ana");
+        Jugador jugador2 = new Jugador("Beto");
+        Deque<Carta> nuevoMazo = new LinkedList<>();
+        nuevoMazo.add(new NumeroCarta("Rojo", "5"));
+        GameUNO juego2 = new GameUNO(List.of(jugador1, jugador2), nuevoMazo);
+        juego2.repartirCartas(1).direccion.getCurrentPlayer().recibirCarta(new ReverseCarta("Rojo"));
+
+        Jugador actual = juego2.getCurrent();
+        juego2.playTurn(new ReverseCarta("Rojo"));
+
+        assertEquals(actual, juego2.getCurrent());
+    }
+
+    @Test
+    public void testCuatroJugadoresSkipSalteaCorrectamente() {
+        Jugador j1 = new Jugador("A");
+        Jugador j2 = new Jugador("B");
+        Jugador j3 = new Jugador("C");
+        Jugador j4 = new Jugador("D");
+
+        Deque<Carta> nuevoMazo = new LinkedList<>();
+        nuevoMazo.add(new NumeroCarta("Rojo", "5"));
+
+        GameUNO juego4 = new GameUNO(List.of(j1, j2, j3, j4), nuevoMazo);
+        juego4.repartirCartas(1);
+        Carta skip = new SkipCarta("Rojo");
+        j1.recibirCarta(skip);
+
+        juego4.playTurn(skip);
+
+        // A juega -> salta B -> turno de C
+        assertEquals(j3, juego4.getCurrent());
+    }
+
+    @Test
+    public void testWildCardCambiaColor() {
+        Jugador actual = juego.getCurrent();
+        CartaWild wild = new CartaWild();
+
+        actual.recibirCarta(wild);
+        wild.asignarColor("Rojo");
+        System.out.println(wild);
+        juego.playTurn(wild);
+
+        assertEquals(wild, juego.topCard());
+        assertEquals("Rojo", juego.topCard().getColor());
+    }
+
+
+
+
+    @Test
+    public void testJugarUltimaCartaEsVictoria() {
+        Jugador actual = juego.getCurrent();
+        actual.mano.clear();
+        Carta ante_ultima = new NumeroCarta("Rojo", "3");
+        actual.recibirCarta(ultima);
+
+        Error ex = assertThrows(Error.class, () -> {
+            juego.juegoYcanto(ultima);
+        });
+
+        assertEquals("El jugador haGanado", ex.getMessage());
+    }
+
+
 }

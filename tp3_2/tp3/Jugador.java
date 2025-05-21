@@ -19,6 +19,10 @@ public class Jugador {
         return nombre;
     }
 
+    public Deque<Carta> getMano() {return mano;}
+
+    public boolean haCantado() {return cantoUNO;}
+
     public boolean haGanado() {
         return mano.isEmpty();
     }
@@ -27,6 +31,7 @@ public class Jugador {
         mano.add(nuevaCarta);
     }
 
+
     private void validarQueLaTengo(Carta carta) {
         if (!mano.contains(carta)) {
             throw new IllegalArgumentException("La carta no está en la mano del jugador");
@@ -34,6 +39,7 @@ public class Jugador {
     }
     private void jugarHastaPoder(GameUNO juego, Carta carta) {
         while (!carta.puedeJugarSobre(juego.carta_mesa)) {
+            System.out.println("KLASJDL");
             carta = juego.getCarta();
             recibirCarta(carta);
         }
@@ -41,24 +47,26 @@ public class Jugador {
     }
 
     private void jugarCartaValida(GameUNO juego, Carta carta) {
+        System.out.println("ALSJDL");
         carta.aplicarEfecto(juego);
         juego.carta_mesa = carta;
+        System.out.println(carta);
         mano.remove(carta);
-        verificarCantoUNO(juego);
+
     }
 
 
     public void jugar(GameUNO juego, Carta cartaElegida) {
+        System.out.println(cartaElegida);
         validarQueLaTengo(cartaElegida);
         jugarHastaPoder(juego, cartaElegida);
     }
-
-    private void verificarCantoUNO(GameUNO juego) {
-        if (mano.size() == 1 && !cantoUNO) {
-            juego.aplicarPenalidadUNO(this);
-        }
-
+    public void cantarUNO() {
+        cantoUNO = true;
     }
+
+
+
 
 
 
