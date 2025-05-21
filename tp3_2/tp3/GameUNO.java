@@ -8,12 +8,13 @@ public class GameUNO {
     public Direccion direccion;
     public Deque<Carta> mazo_total = new LinkedList<>();
     public Carta carta_mesa;
-
+    private int cant_jugadores;
     public GameUNO(List<Jugador> jugadores, Deque<Carta> mazo_total) {
         if (jugadores.isEmpty()) throw new IllegalArgumentException("Lista vacía");
         Jugador first = jugadores.get(0);
         Jugador prev = first;
-        for (int i = 1; i < jugadores.size(); i++) {
+        this.cant_jugadores = jugadores.size();
+        for (int i = 1; i <cant_jugadores; i++) {
             Jugador node = jugadores.get(i);
             prev.next = node;
             node.prev = prev;
@@ -28,16 +29,19 @@ public class GameUNO {
     }
     public GameUNO repartirCartas(int cant_cartas) {
         for (int i = 0; i < cant_cartas; i++) {
-            direccion.getCurrentPlayer().recibirCarta(mazo_total.pop());
+            getCurrent().recibirCarta(mazo_total.pop());
         }
         return this;
 
     }
+    public int getCantJugadores() { return cant_jugadores;    }
+
     public Carta getCarta() {
         if (mazo_total.isEmpty()) {
             throw new IllegalStateException("El mazo está vacío");
         }
-        return mazo_total.pop();}
+        return mazo_total.pop();
+    }
     public Jugador getCurrent() {
         return direccion.getCurrentPlayer();
     }
@@ -46,11 +50,29 @@ public class GameUNO {
     }
 
     public GameUNO playTurn(Carta carta_elegida) {
-
-        direccion.getCurrentPlayer().jugar(this,carta_elegida);
+        Jugador actual_player = this.getCurrent();
+        verificarCantoUNO(actual_player);
+        actual_player.jugar(this,carta_elegida);
+        if (actual_player.haGanado()){
+            throw new Error("El jugador haGanado");
+        }
 
         direccion.avanzar();
+
         return this;
+    }
+
+    public GameUNO juegoYcanto(Carta carta_elegida) {
+        Jugador actual_player = this.getCurrent();
+        playTurn(carta_elegida);
+        actual_player.cantarUNO();
+        return this;
+    }
+    private void verificarCantoUNO(Jugador jugador) {
+        if (jugador.getMano().size() == 1 && !jugador.haCantado()) {
+            this.aplicarPenalidadUNO(jugador);
+        }
+
     }
     public void aplicarPenalidadUNO(Jugador jugador) {
         jugador.recibirCarta(this.getCarta());

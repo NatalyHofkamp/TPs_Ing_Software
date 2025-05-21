@@ -8,7 +8,10 @@ public class ReverseCarta extends CartaColor {
 
     @Override
     public void aplicarEfecto(GameUNO juego) {
-        juego.direccion = juego.direccion.invertir();
-
+        if (juego.getCantJugadores() == 2) {
+            juego.direccion.avanzar();
+        } else {
+            juego.direccion = juego.direccion.invertir();
+        }
     }
 }

@@ -19,6 +19,10 @@ public class Jugador {
         return nombre;
     }
 
+    public Deque<Carta> getMano() {return mano;}
+
+    public boolean haCantado() {return cantoUNO;}
+
     public boolean haGanado() {
         return mano.isEmpty();
     }
@@ -26,6 +30,7 @@ public class Jugador {
     public void recibirCarta(Carta nuevaCarta) {
         mano.add(nuevaCarta);
     }
+
 
     private void validarQueLaTengo(Carta carta) {
         if (!mano.contains(carta)) {
@@ -44,7 +49,7 @@ public class Jugador {
         carta.aplicarEfecto(juego);
         juego.carta_mesa = carta;
         mano.remove(carta);
-        verificarCantoUNO(juego);
+
     }
 
 
@@ -52,13 +57,12 @@ public class Jugador {
         validarQueLaTengo(cartaElegida);
         jugarHastaPoder(juego, cartaElegida);
     }
-
-    private void verificarCantoUNO(GameUNO juego) {
-        if (mano.size() == 1 && !cantoUNO) {
-            juego.aplicarPenalidadUNO(this);
-        }
-
+    public void cantarUNO() {
+        cantoUNO = true;
     }
+
+
+
 
 
 
