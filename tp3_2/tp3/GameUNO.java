@@ -51,8 +51,12 @@ public class GameUNO {
 
     public GameUNO playTurn(Carta carta_elegida) {
         Jugador actual_player = this.getCurrent();
-        verificarCantoUNO(actual_player);
         actual_player.jugar(this,carta_elegida);
+
+        if (actual_player.getMano().size() == 1 && !carta_elegida.cantoUNO()) {
+            this.aplicarPenalidadUNO(actual_player);
+            System.out.println("Penalidad por no cantar UNO!");
+        }
         if (actual_player.haGanado()){
             throw new Error("El jugador haGanado");
         }
@@ -62,18 +66,7 @@ public class GameUNO {
         return this;
     }
 
-    public GameUNO juegoYcanto(Carta carta_elegida) {
-        Jugador actual_player = this.getCurrent();
-        playTurn(carta_elegida);
-        actual_player.cantarUNO();
-        return this;
-    }
-    private void verificarCantoUNO(Jugador jugador) {
-        if (jugador.getMano().size() == 1 && !jugador.haCantado()) {
-            this.aplicarPenalidadUNO(jugador);
-        }
 
-    }
     public void aplicarPenalidadUNO(Jugador jugador) {
         jugador.recibirCarta(this.getCarta());
         jugador.recibirCarta(this.getCarta());

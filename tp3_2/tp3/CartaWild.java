@@ -8,7 +8,6 @@ public class CartaWild extends Carta {
     }
 
     public boolean puedeJugarSobre(Carta cartaSobreMesa) {
-        System.out.println(cartaSobreMesa.getColor());
         return this.color.equals(cartaSobreMesa.getColor());
     }
 

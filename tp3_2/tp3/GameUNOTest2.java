@@ -146,40 +146,6 @@ public class GameUNOTest2 {
         // Entonces penaliza con 2 cartas
         assertEquals(3, actual.mano.size());
     }
-    @Test
-    public void testJugadorCantaUNOCorrectamente() {
-        Jugador actual = juego.getCurrent();
-        actual.mano.clear();
-
-        Carta carta1 = new NumeroCarta("Rojo", "7");
-        Carta carta2 = new NumeroCarta("Rojo", "2");
-
-        actual.recibirCarta(carta1);
-        actual.recibirCarta(carta2);
-
-
-        // Se asegura que puede jugar una carta, le deja 1 y canta UNO
-        juego.juegoYcanto(carta1);
-
-        assertEquals(1, actual.mano.size());
-        assertTrue(actual.haCantado());
-    }
-
-    @Test
-    public void testJugadorNoCantaUNORecibePenalidad() {
-        Jugador actual = juego.getCurrent();
-        actual.mano.clear();
-
-        Carta carta1 = new NumeroCarta("Rojo", "7");
-        Carta carta2 = new NumeroCarta("Rojo", "2");
-
-        actual.recibirCarta(carta1);
-        actual.recibirCarta(carta2);
-
-        juego.playTurn(carta1); // no canta UNO
-
-        assertEquals(3, actual.mano.size()); // 1 que le quedó + 2 de penalidad
-    }
 
     @Test
     public void testDosJugadoresReverseVuelveAlMismoJugador() {
@@ -210,7 +176,44 @@ public class GameUNOTest2 {
         System.out.println("Cartas de " + actual.getNombre() + " antes de jugar Reverse: " + actual.getMano());
 
         // Jugar la carta Reverse y verificar si vuelve al mismo jugador
-        juego2.juegoYcanto(carta_reverse);
+        juego2.playTurn(carta_reverse.uno());
+
+        // Mostrar quién es el jugador actual después del Reverse
+        System.out.println("Jugador actual después del Reverse: " + juego2.getCurrent().getNombre());
+
+        // Validar que sigue siendo el mismo jugador
+        assertEquals(actual, juego2.getCurrent());
+    }
+@Test
+    public void testDosJugadoresSkipVuelveAlMismoJugador() {
+        Jugador jugador1 = new Jugador("Ana");
+        Jugador jugador2 = new Jugador("Beto");
+
+        // Crear un mazo inicial con una sola carta
+        Deque<Carta> nuevoMazo = new LinkedList<>();
+        nuevoMazo.add(new NumeroCarta("Rojo", "5"));
+        nuevoMazo.add(new NumeroCarta("Rojo", "3"));
+        // Crear el juego con los dos jugadores y ese mazo
+        GameUNO juego2 = new GameUNO(List.of(jugador1, jugador2), nuevoMazo);
+
+        // Repartir una carta a cada jugador
+        juego2.repartirCartas(1);
+
+        // Mostrar las cartas que tienen los jugadores después de repartir
+        System.out.println("Cartas de Ana: " + jugador1.getMano());
+        System.out.println("Cartas de Beto: " + jugador2.getMano());
+
+        // Obtener el jugador actual
+        Jugador actual = juego2.getCurrent();
+        Carta carta_skip = new SkipCarta("Rojo");
+        // El jugador actual recibe una carta Reverse
+        actual.recibirCarta(carta_skip);
+
+        // Mostrar las cartas del jugador actual antes de jugar
+        System.out.println("Cartas de " + actual.getNombre() + " antes de jugar Reverse: " + actual.getMano());
+
+        // Jugar la carta Reverse y verificar si vuelve al mismo jugador
+        juego2.playTurn(carta_skip.uno());
 
         // Mostrar quién es el jugador actual después del Reverse
         System.out.println("Jugador actual después del Reverse: " + juego2.getCurrent().getNombre());
@@ -228,9 +231,10 @@ public class GameUNOTest2 {
 
         Deque<Carta> nuevoMazo = new LinkedList<>();
         nuevoMazo.add(new NumeroCarta("Rojo", "5"));
-
+        nuevoMazo.add(new NumeroCarta("Rojo", "6"));
+        nuevoMazo.add(new NumeroCarta("Rojo", "7"));
         GameUNO juego4 = new GameUNO(List.of(j1, j2, j3, j4), nuevoMazo);
-        juego4.repartirCartas(1);
+        juego4.repartirCartas(2);
         Carta skip = new SkipCarta("Rojo");
         j1.recibirCarta(skip);
 
@@ -265,7 +269,7 @@ public class GameUNOTest2 {
         Carta ultima = new NumeroCarta("Rojo", "2");
         actual.recibirCarta(ante_ultima);
         actual.recibirCarta(ultima);
-        juego.juegoYcanto(ante_ultima);
+        juego.playTurn(ante_ultima.uno());
         juego.playTurn(juego.getCurrent().getMano().peek());
         Error error = assertThrows(Error.class, () -> {
             juego.playTurn(ultima);

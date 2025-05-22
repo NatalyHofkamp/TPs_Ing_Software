@@ -11,12 +11,6 @@ public abstract class Direccion {
         return current;
     }
 
-    // Ahora devuelve el jugador que es saltado (penalizado)
-    public void saltearJugador() {
-        avanzar();              // Avanzamos al jugador penalizado
-        avanzar();              // Avanzamos al siguiente jugador que va a jugar
-    }
-
     public abstract void avanzar();
 
     public abstract Direccion invertir();
