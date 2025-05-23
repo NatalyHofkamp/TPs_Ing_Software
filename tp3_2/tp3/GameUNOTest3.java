@@ -76,8 +76,6 @@ public class GameUNOTest3 {
         }
     }
 
-    // 🧪 TESTS
-
     @Test
     public void testJugarCartaValidaActualizaMesaYMano() {
         Jugador actual = juego3.getCurrent();
@@ -120,8 +118,6 @@ public class GameUNOTest3 {
         assertEquals("Rojo", juego3.topCard().getColor());
     }
 
-    // 🧪 Dos jugadores
-
     @Test
     public void testSkipConDosJugadoresVuelveAlMismo() {
         j2A.recibirCarta(skipRojo);
@@ -137,8 +133,6 @@ public class GameUNOTest3 {
         assertEquals(cantidadAntes + 2, j2B.getMano().size());
         assertEquals(j2A, juego2.getCurrent());
     }
-
-    // 🧪 Tres jugadores
 
     @Test
     public void testReverseConTresJugadoresInvierteOrden() {
@@ -164,8 +158,6 @@ public class GameUNOTest3 {
         assertEquals(antes + 2, j3B.getMano().size());
         assertEquals(j3C, juego3.getCurrent());
     }
-
-    // 🧪 Cuatro jugadores
 
     @Test
     public void testSkipConCuatroJugadoresSaltaCorrectamente() {
