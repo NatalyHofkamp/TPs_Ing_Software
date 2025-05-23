@@ -12,41 +12,68 @@ public class GameUNOTest3 {
 
     @BeforeEach
     public void setup() {
-        j1 = new Jugador("A");
-        j2 = new Jugador("B");
-        j3 = new Jugador("C");
-        j4 = new Jugador("D");
-
-        juego2 = new GameUNO(List.of(j1, j2), crearMazo());
-        juego3 = new GameUNO(List.of(j1, j2, j3), crearMazo());
-        juego4 = new GameUNO(List.of(j1, j2, j3, j4), crearMazo());
-
+        // juego2
+        Jugador a2 = new Jugador("A");
+        Jugador b2 = new Jugador("B");
+        juego2 = new GameUNO(List.of(a2, b2), crearMazo());
         repartirCartas(juego2);
+
+        // juego3
+        Jugador a3 = new Jugador("A");
+        Jugador b3 = new Jugador("B");
+        Jugador c3 = new Jugador("C");
+        juego3 = new GameUNO(List.of(a3, b3, c3), crearMazo());
         repartirCartas(juego3);
+
+        // juego4
+        Jugador a4 = new Jugador("A");
+        Jugador b4 = new Jugador("B");
+        Jugador c4 = new Jugador("C");
+        Jugador d4 = new Jugador("D");
+        juego4 = new GameUNO(List.of(a4, b4, c4, d4), crearMazo());
         repartirCartas(juego4);
     }
+
 
     private Deque<Carta> crearMazo() {
         Deque<Carta> mazo = new LinkedList<>();
         mazo.addLast(new NumeroCarta("Rojo", "5"));
         mazo.addLast(new NumeroCarta("Azul", "4"));
         mazo.addLast(new NumeroCarta("Rojo", "7"));
+
         mazo.addLast(new MasDosCarta("Rojo"));
         mazo.addLast(new SkipCarta("Verde"));
         mazo.addLast(new ReverseCarta("Azul"));
-        mazo.addLast(new NumeroCarta("Verde", "3"));
+
+        mazo.addLast(new NumeroCarta("Rojo", "3"));
+
         mazo.addLast(new CartaWild());
         mazo.addLast(new MasDosCarta("Verde"));
+
+        mazo.addLast(new NumeroCarta("Rojo", "5"));
+
+        mazo.addLast(new SkipCarta("Amarillo"));
+        mazo.addLast(new ReverseCarta("Verde"));
+
+        mazo.addLast(new NumeroCarta("Rojo", "1"));
+        mazo.addLast(new NumeroCarta("Verde", "2"));
+        mazo.addLast(new NumeroCarta("Azul", "3"));
+
+
+
         return mazo;
     }
 
     private void repartirCartas(GameUNO juego) {
         Jugador primero = juego.getCurrent();
-        Jugador actual = primero;
-        do {
-            actual.recibirCarta(juego.mazo_total.poll());
-            actual = actual.next;
-        } while (actual != primero);
+
+        for (int i = 0; i < 3; i++) {
+            Jugador actual = primero;
+            do {
+                actual.recibirCarta(juego.mazo_total.poll());
+                actual = actual.next;
+            } while (actual != primero);
+        }
     }
 
 
@@ -103,16 +130,18 @@ public class GameUNOTest3 {
     @Test
     public void testReverseConDosJugadoresVuelveAlMismo() {
         Jugador actual = juego2.getCurrent();
-        actual.recibirCarta(new ReverseCarta("Rojo"));
-        juego2.playTurn(new ReverseCarta("Rojo"));
+        ReverseCarta invierte = new ReverseCarta("Rojo");
+        actual.recibirCarta(invierte);
+        juego2.playTurn(invierte);
         assertEquals(actual, juego2.getCurrent());
     }
 
     @Test
     public void testSkipConDosJugadoresVuelveAlMismo() {
         Jugador actual = juego2.getCurrent();
-        actual.recibirCarta(new SkipCarta("Rojo"));
-        juego2.playTurn(new SkipCarta("Rojo"));
+        SkipCarta skipRojo = new SkipCarta("Rojo");
+        actual.recibirCarta(skipRojo);
+        juego2.playTurn(skipRojo);
         assertEquals(actual, juego2.getCurrent());
     }
 
@@ -121,8 +150,9 @@ public class GameUNOTest3 {
         Jugador actual = juego2.getCurrent();
         Jugador otro = actual.next;
         int cantidadAntes = otro.getMano().size();
-        actual.recibirCarta(new MasDosCarta("Rojo"));
-        juego2.playTurn(new MasDosCarta("Rojo"));
+        MasDosCarta masDosCarta = new MasDosCarta("Rojo");
+        actual.recibirCarta(masDosCarta);
+        juego2.playTurn(masDosCarta.uno());
         assertEquals(cantidadAntes + 2, otro.getMano().size());
         assertEquals(actual, juego2.getCurrent());
     }
@@ -132,8 +162,9 @@ public class GameUNOTest3 {
     @Test
     public void testReverseConTresJugadoresInvierteOrden() {
         Jugador actual = juego3.getCurrent();
-        actual.recibirCarta(new ReverseCarta("Rojo"));
-        juego3.playTurn(new ReverseCarta("Rojo"));
+        ReverseCarta invierte = new ReverseCarta("Rojo");
+        actual.recibirCarta(invierte);
+        juego3.playTurn(invierte);
         assertTrue(juego3.direccion instanceof Izquierda);
         assertEquals(actual.prev, juego3.getCurrent());
     }
@@ -142,8 +173,9 @@ public class GameUNOTest3 {
     public void testSkipConTresJugadoresSaltaUno() {
         Jugador actual = juego3.getCurrent();
         Jugador esperado = actual.next.next;
-        actual.recibirCarta(new SkipCarta("Rojo"));
-        juego3.playTurn(new SkipCarta("Rojo"));
+        SkipCarta skipRojo = new SkipCarta("Rojo");
+        actual.recibirCarta(skipRojo);
+        juego3.playTurn(skipRojo);
         assertEquals(esperado, juego3.getCurrent());
     }
 
@@ -153,8 +185,9 @@ public class GameUNOTest3 {
         Jugador siguiente = actual.next;
         Jugador esperado = siguiente.next;
         int cantidadAntes = siguiente.getMano().size();
-        actual.recibirCarta(new MasDosCarta("Rojo"));
-        juego3.playTurn(new MasDosCarta("Rojo"));
+        MasDosCarta masRojo = new MasDosCarta("Rojo");
+        actual.recibirCarta(masRojo);
+        juego3.playTurn(masRojo);
         assertEquals(cantidadAntes + 2, siguiente.getMano().size());
         assertEquals(esperado, juego3.getCurrent());
     }
@@ -165,16 +198,18 @@ public class GameUNOTest3 {
     public void testSkipConCuatroJugadoresSaltaCorrectamente() {
         Jugador actual = juego4.getCurrent();
         Jugador esperado = actual.next.next;
-        actual.recibirCarta(new SkipCarta("Rojo"));
-        juego4.playTurn(new SkipCarta("Rojo"));
+        SkipCarta skipRojo = new SkipCarta("Rojo");
+        actual.recibirCarta(skipRojo);
+        juego4.playTurn(skipRojo);
         assertEquals(esperado, juego4.getCurrent());
     }
 
     @Test
     public void testReverseConCuatroJugadoresInvierteDireccion() {
         Jugador actual = juego4.getCurrent();
-        actual.recibirCarta(new ReverseCarta("Rojo"));
-        juego4.playTurn(new ReverseCarta("Rojo"));
+        ReverseCarta invierte = new ReverseCarta("Rojo");
+        actual.recibirCarta(invierte);
+        juego4.playTurn(invierte);
         assertTrue(juego4.direccion instanceof Izquierda);
         assertEquals(actual.prev, juego4.getCurrent());
     }
@@ -185,8 +220,9 @@ public class GameUNOTest3 {
         Jugador penalizado = actual.next;
         Jugador esperado = penalizado.next;
         int antes = penalizado.getMano().size();
-        actual.recibirCarta(new MasDosCarta("Rojo"));
-        juego4.playTurn(new MasDosCarta("Rojo"));
+        MasDosCarta masDosCarta = new MasDosCarta("Rojo");
+        actual.recibirCarta(masDosCarta);
+        juego4.playTurn(masDosCarta);
         assertEquals(antes + 2, penalizado.getMano().size());
         assertEquals(esperado, juego4.getCurrent());
     }

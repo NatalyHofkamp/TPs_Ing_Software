@@ -10,6 +10,7 @@ public class ReverseCarta extends CartaColor {
     public void aplicarEfecto(GameUNO juego) {
         if (juego.getCantJugadores() == 2) {
             juego.direccion.avanzar();
+            System.out.println(juego.getCantJugadores());
         } else {
             juego.direccion = juego.direccion.invertir();
         }
