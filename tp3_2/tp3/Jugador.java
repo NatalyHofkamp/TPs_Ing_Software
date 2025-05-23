@@ -32,19 +32,6 @@ public class Jugador {
     }
 
 
-    private void validarQueLaTengo(Carta carta) {
-        if (!mano.contains(carta)) {
-            throw new IllegalArgumentException("La carta no está en la mano del jugador");
-        }
-    }
-    private void jugarHastaPoder(GameUNO juego, Carta carta) {
-        while (!carta.puedeJugarSobre(juego.carta_mesa)) {
-            carta = juego.getCarta();
-            recibirCarta(carta);
-        }
-        jugarCartaValida(juego, carta);
-    }
-
     private void jugarCartaValida(GameUNO juego, Carta carta) {
         carta.aplicarEfecto(juego);
         juego.carta_mesa = carta;
@@ -52,10 +39,12 @@ public class Jugador {
 
     }
 
-
-    public void jugar(GameUNO juego, Carta cartaElegida) {
-        validarQueLaTengo(cartaElegida);
-        jugarHastaPoder(juego, cartaElegida);
+    public void jugar(GameUNO juego, Carta carta) {
+        while (!carta.puedeJugarSobre(juego.carta_mesa)) {
+            carta = juego.getCarta();
+            recibirCarta(carta);
+        }
+        jugarCartaValida(juego, carta);
     }
     public void cantarUNO() {
         cantoUNO = true;

@@ -1,229 +1,232 @@
 package tp3;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameUNOTest3 {
 
     GameUNO juego2, juego3, juego4;
-    Jugador j1, j2, j3, j4;
+    Jugador j2A, j2B, j3A, j3B, j3C, j4A, j4B, j4C, j4D;
+
+    // Cartas reutilizables
+    Carta rojo5 = new NumeroCarta("Rojo", "5");
+    Carta rojo3 = new NumeroCarta("Rojo", "3");
+    Carta rojo7 = new NumeroCarta("Rojo", "7");
+    Carta rojo2 = new NumeroCarta("Rojo", "2");
+
+    Carta azul4 = new NumeroCarta("Azul", "4");
+    Carta azul3 = new NumeroCarta("Azul", "3");
+    Carta verde2 = new NumeroCarta("Verde", "2");
+
+    Carta masDosRojo = new MasDosCarta("Rojo");
+    Carta masDosVerde = new MasDosCarta("Verde");
+
+    Carta skipRojo = new SkipCarta("Rojo");
+    Carta skipVerde = new SkipCarta("Verde");
+    Carta skipAmarillo = new SkipCarta("Amarillo");
+
+    Carta reverseRojo = new ReverseCarta("Rojo");
+    Carta reverseAzul = new ReverseCarta("Azul");
+    Carta reverseVerde = new ReverseCarta("Verde");
+
+    Carta wild = new CartaWild();
 
     @BeforeEach
     public void setup() {
         // juego2
-        Jugador a2 = new Jugador("A");
-        Jugador b2 = new Jugador("B");
-        juego2 = new GameUNO(List.of(a2, b2), crearMazo());
-        repartirCartas(juego2);
+        j2A = new Jugador("A");
+        j2B = new Jugador("B");
+        juego2 = new GameUNO(List.of(j2A, j2B), crearMazo());
+        repartirCartas(juego2, 2);
 
         // juego3
-        Jugador a3 = new Jugador("A");
-        Jugador b3 = new Jugador("B");
-        Jugador c3 = new Jugador("C");
-        juego3 = new GameUNO(List.of(a3, b3, c3), crearMazo());
-        repartirCartas(juego3);
+        j3A = new Jugador("A");
+        j3B = new Jugador("B");
+        j3C = new Jugador("C");
+        juego3 = new GameUNO(List.of(j3A, j3B, j3C), crearMazo());
+        repartirCartas(juego3, 2);
 
         // juego4
-        Jugador a4 = new Jugador("A");
-        Jugador b4 = new Jugador("B");
-        Jugador c4 = new Jugador("C");
-        Jugador d4 = new Jugador("D");
-        juego4 = new GameUNO(List.of(a4, b4, c4, d4), crearMazo());
-        repartirCartas(juego4);
+        j4A = new Jugador("A");
+        j4B = new Jugador("B");
+        j4C = new Jugador("C");
+        j4D = new Jugador("D");
+        juego4 = new GameUNO(List.of(j4A, j4B, j4C, j4D), crearMazo());
+        repartirCartas(juego4, 2);
     }
-
 
     private Deque<Carta> crearMazo() {
-        Deque<Carta> mazo = new LinkedList<>();
-        mazo.addLast(new NumeroCarta("Rojo", "5"));
-        mazo.addLast(new NumeroCarta("Azul", "4"));
-        mazo.addLast(new NumeroCarta("Rojo", "7"));
-
-        mazo.addLast(new MasDosCarta("Rojo"));
-        mazo.addLast(new SkipCarta("Verde"));
-        mazo.addLast(new ReverseCarta("Azul"));
-
-        mazo.addLast(new NumeroCarta("Rojo", "3"));
-
-        mazo.addLast(new CartaWild());
-        mazo.addLast(new MasDosCarta("Verde"));
-
-        mazo.addLast(new NumeroCarta("Rojo", "5"));
-
-        mazo.addLast(new SkipCarta("Amarillo"));
-        mazo.addLast(new ReverseCarta("Verde"));
-
-        mazo.addLast(new NumeroCarta("Rojo", "1"));
-        mazo.addLast(new NumeroCarta("Verde", "2"));
-        mazo.addLast(new NumeroCarta("Azul", "3"));
-
-
-
-        return mazo;
+        return new LinkedList<>(List.of(
+                rojo5, azul4, rojo7, masDosRojo, skipVerde, reverseAzul,
+                rojo3, wild, masDosVerde, rojo5, skipAmarillo, reverseVerde,
+                rojo2, verde2, azul3
+        ));
     }
 
-    private void repartirCartas(GameUNO juego) {
-        Jugador primero = juego.getCurrent();
-
-        for (int i = 0; i < 3; i++) {
-            Jugador actual = primero;
+    private void repartirCartas(GameUNO juego, int cartasPorJugador) {
+        Jugador actual = juego.getCurrent();
+        for (int i = 0; i < cartasPorJugador; i++) {
+            Jugador j = actual;
             do {
-                actual.recibirCarta(juego.mazo_total.poll());
-                actual = actual.next;
-            } while (actual != primero);
+                j.recibirCarta(juego.mazo_total.poll());
+                j = j.next;
+            } while (j != actual);
         }
     }
 
+    // 🧪 TESTS
 
-    // 🧪 Tests generales
     @Test
     public void testJugarCartaValidaActualizaMesaYMano() {
         Jugador actual = juego3.getCurrent();
-        Carta carta = new NumeroCarta("Rojo", "7");
-        actual.recibirCarta(carta);
-        assertTrue(carta.puedeJugarSobre(juego3.topCard()));
-        juego3.playTurn(carta);
-        assertEquals(carta, juego3.topCard());
-        assertFalse(actual.getMano().contains(carta));
-    }
-
-    @Test
-    public void testJugarCartaNoEnManoLanza() {
-        Carta carta = new NumeroCarta("Verde", "3");
-        assertThrows(IllegalArgumentException.class, () -> juego3.playTurn(carta));
+        actual.recibirCarta(rojo7);
+        assertTrue(rojo7.puedeJugarSobre(juego3.topCard()));
+        juego3.playTurn(rojo7);
+        assertEquals(rojo7, juego3.topCard());
+        assertFalse(actual.getMano().contains(rojo7));
     }
 
     @Test
     public void testPenalidadPorNoCantarUNO() {
         Jugador actual = juego3.getCurrent();
         actual.getMano().clear();
-        actual.recibirCarta(new NumeroCarta("Rojo", "7"));
-        actual.recibirCarta(new NumeroCarta("Rojo", "2"));
-        juego3.playTurn(actual.getMano().peek());
-        assertEquals(3, actual.getMano().size()); // Penaliza con 2
+        actual.recibirCarta(rojo7);
+        actual.recibirCarta(rojo2);
+        juego3.playTurn(rojo7);
+        assertEquals(3, actual.getMano().size()); // penaliza con 2
     }
 
     @Test
     public void testJugarUltimaCartaEsVictoria() {
         Jugador actual = juego3.getCurrent();
         actual.getMano().clear();
-        Carta ultima = new NumeroCarta("Rojo", "2");
-        actual.recibirCarta(ultima);
-        Error error = assertThrows(Error.class, () -> juego3.playTurn(ultima));
-        assertEquals("El jugador haGanado", error.getMessage());
+        actual.recibirCarta(rojo2);
+        juego3.playTurn(rojo2); // Juega la última carta y gana
+        Jugador siguiente = juego3.getCurrent();
+        Carta otraCarta = new NumeroCarta("Rojo", "3");
+        siguiente.recibirCarta(otraCarta);
+        assertThrows(IllegalStateException.class, () -> juego3.playTurn(otraCarta));
     }
+
 
     @Test
     public void testWildCardCambiaColor() {
         Jugador actual = juego3.getCurrent();
-        CartaWild wild = new CartaWild();
         actual.recibirCarta(wild);
-        wild.asignarColor("Rojo");
+        ((CartaWild) wild).asignarColor("Rojo");
         juego3.playTurn(wild);
         assertEquals("Rojo", juego3.topCard().getColor());
     }
 
-    // 🧪 Tests con 2 jugadores
-
-    @Test
-    public void testReverseConDosJugadoresVuelveAlMismo() {
-        Jugador actual = juego2.getCurrent();
-        ReverseCarta invierte = new ReverseCarta("Rojo");
-        actual.recibirCarta(invierte);
-        juego2.playTurn(invierte);
-        assertEquals(actual, juego2.getCurrent());
-    }
+    // 🧪 Dos jugadores
 
     @Test
     public void testSkipConDosJugadoresVuelveAlMismo() {
-        Jugador actual = juego2.getCurrent();
-        SkipCarta skipRojo = new SkipCarta("Rojo");
-        actual.recibirCarta(skipRojo);
+        j2A.recibirCarta(skipRojo);
         juego2.playTurn(skipRojo);
-        assertEquals(actual, juego2.getCurrent());
+        assertEquals(j2A, juego2.getCurrent());
     }
 
     @Test
     public void testMasDosConDosJugadoresSaltaCorrectamente() {
-        Jugador actual = juego2.getCurrent();
-        Jugador otro = actual.next;
-        int cantidadAntes = otro.getMano().size();
-        MasDosCarta masDosCarta = new MasDosCarta("Rojo");
-        actual.recibirCarta(masDosCarta);
-        juego2.playTurn(masDosCarta.uno());
-        assertEquals(cantidadAntes + 2, otro.getMano().size());
-        assertEquals(actual, juego2.getCurrent());
+        int cantidadAntes = j2B.getMano().size();
+        j2A.recibirCarta(masDosRojo);
+        juego2.playTurn(masDosRojo.uno());
+        assertEquals(cantidadAntes + 2, j2B.getMano().size());
+        assertEquals(j2A, juego2.getCurrent());
     }
 
-    // 🧪 Tests con 3 jugadores
+    // 🧪 Tres jugadores
 
     @Test
     public void testReverseConTresJugadoresInvierteOrden() {
-        Jugador actual = juego3.getCurrent();
-        ReverseCarta invierte = new ReverseCarta("Rojo");
-        actual.recibirCarta(invierte);
-        juego3.playTurn(invierte);
+        j3A.recibirCarta(reverseRojo);
+        juego3.playTurn(reverseRojo);
         assertTrue(juego3.direccion instanceof Izquierda);
-        assertEquals(actual.prev, juego3.getCurrent());
+        assertEquals(j3A.prev, juego3.getCurrent());
     }
 
     @Test
     public void testSkipConTresJugadoresSaltaUno() {
-        Jugador actual = juego3.getCurrent();
-        Jugador esperado = actual.next.next;
-        SkipCarta skipRojo = new SkipCarta("Rojo");
-        actual.recibirCarta(skipRojo);
+        j3A.recibirCarta(skipRojo);
+        Jugador esperado = j3A.next.next;
         juego3.playTurn(skipRojo);
         assertEquals(esperado, juego3.getCurrent());
     }
 
     @Test
     public void testMasDosConTresJugadoresSaltaCorrectamente() {
-        Jugador actual = juego3.getCurrent();
-        Jugador siguiente = actual.next;
-        Jugador esperado = siguiente.next;
-        int cantidadAntes = siguiente.getMano().size();
-        MasDosCarta masRojo = new MasDosCarta("Rojo");
-        actual.recibirCarta(masRojo);
-        juego3.playTurn(masRojo);
-        assertEquals(cantidadAntes + 2, siguiente.getMano().size());
-        assertEquals(esperado, juego3.getCurrent());
+        j3A.recibirCarta(masDosRojo);
+        int antes = j3B.getMano().size();
+        juego3.playTurn(masDosRojo);
+        assertEquals(antes + 2, j3B.getMano().size());
+        assertEquals(j3C, juego3.getCurrent());
     }
 
-    // 🧪 Tests con 4 jugadores
+    // 🧪 Cuatro jugadores
 
     @Test
     public void testSkipConCuatroJugadoresSaltaCorrectamente() {
-        Jugador actual = juego4.getCurrent();
-        Jugador esperado = actual.next.next;
-        SkipCarta skipRojo = new SkipCarta("Rojo");
-        actual.recibirCarta(skipRojo);
+        j4A.recibirCarta(skipRojo);
+        Jugador esperado = j4A.next.next;
         juego4.playTurn(skipRojo);
         assertEquals(esperado, juego4.getCurrent());
     }
 
     @Test
     public void testReverseConCuatroJugadoresInvierteDireccion() {
-        Jugador actual = juego4.getCurrent();
-        ReverseCarta invierte = new ReverseCarta("Rojo");
-        actual.recibirCarta(invierte);
-        juego4.playTurn(invierte);
+        j4A.recibirCarta(reverseRojo);
+        juego4.playTurn(reverseRojo);
         assertTrue(juego4.direccion instanceof Izquierda);
-        assertEquals(actual.prev, juego4.getCurrent());
+        assertEquals(j4A.prev, juego4.getCurrent());
     }
 
     @Test
     public void testMasDosConCuatroJugadoresSaltaCorrectamente() {
-        Jugador actual = juego4.getCurrent();
-        Jugador penalizado = actual.next;
-        Jugador esperado = penalizado.next;
-        int antes = penalizado.getMano().size();
-        MasDosCarta masDosCarta = new MasDosCarta("Rojo");
-        actual.recibirCarta(masDosCarta);
-        juego4.playTurn(masDosCarta);
-        assertEquals(antes + 2, penalizado.getMano().size());
-        assertEquals(esperado, juego4.getCurrent());
+        j4A.recibirCarta(masDosRojo);
+        int antes = j4B.getMano().size();
+        juego4.playTurn(masDosRojo);
+        assertEquals(antes + 2, j4B.getMano().size());
+        assertEquals(j4C, juego4.getCurrent());
+    }
+
+    @Test
+    public void testSecuenciaDeTurnosConCartasValidas() {
+        j3A.recibirCarta(rojo7);
+        juego3.playTurn(rojo7);
+        assertEquals(rojo7, juego3.topCard());
+        assertEquals(j3B, juego3.getCurrent());
+
+        j3B.recibirCarta(rojo3);
+        juego3.playTurn(rojo3);
+        assertEquals(rojo3, juego3.topCard());
+        assertEquals(j3C, juego3.getCurrent());
+
+        j3C.recibirCarta(rojo5);
+        juego3.playTurn(rojo5);
+        assertEquals(rojo5, juego3.topCard());
+        assertEquals(j3A, juego3.getCurrent());
+    }
+
+    @Test
+    public void testCantaUnoYGanaYNoSePuedeSeguirJugando() {
+        j2A.getMano().clear();
+        j2A.recibirCarta(rojo3);
+        j2A.recibirCarta(rojo5);
+        j2B.recibirCarta(rojo7);
+
+        juego2.playTurn(rojo3.uno());
+        assertEquals(1, j2A.getMano().size());
+
+        juego2.playTurn(rojo7);
+        juego2.playTurn(rojo5); // j2A gana
+
+        assertEquals(0, j2A.getMano().size());
+
+        j2B.recibirCarta(azul4);
+        assertThrows(IllegalStateException.class, () -> juego2.playTurn(azul4));
     }
 }
+

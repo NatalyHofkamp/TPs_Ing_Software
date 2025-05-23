@@ -9,6 +9,7 @@ public class GameUNO {
     public Deque<Carta> mazo_total = new LinkedList<>();
     public Carta carta_mesa;
     private int cant_jugadores;
+    private boolean win;
     public GameUNO(List<Jugador> jugadores, Deque<Carta> mazo_total) {
         if (jugadores.isEmpty()) throw new IllegalArgumentException("Lista vacía");
         Jugador first = jugadores.get(0);
@@ -36,6 +37,8 @@ public class GameUNO {
     }
     public int getCantJugadores() { return cant_jugadores;    }
 
+
+
     public Carta getCarta() {
         if (mazo_total.isEmpty()) {
             throw new IllegalStateException("El mazo está vacío");
@@ -50,16 +53,20 @@ public class GameUNO {
     }
 
     public GameUNO playTurn(Carta carta_elegida) {
+        if(win){throw new IllegalStateException("El juego ya terminó, no se puede seguir jugando.");}
         Jugador actual_player = this.getCurrent();
+
         actual_player.jugar(this,carta_elegida);
 
         if (actual_player.getMano().size() == 1 && !carta_elegida.cantoUNO()) {
             this.aplicarPenalidadUNO(actual_player);
             System.out.println("Penalidad por no cantar UNO!");
         }
+
         if (actual_player.haGanado()){
-            throw new Error("El jugador haGanado");
+            win = true;
         }
+
 
         direccion.avanzar();
 
