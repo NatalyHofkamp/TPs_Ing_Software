@@ -256,7 +256,14 @@ public class juegoUNOTest3 {
     }
 
     @Test
-    public void test18JugadorRobaHastaTenerCartaValida() {
+    public void test18JugadorSinCartaValidaRoba() {
+        j3A.jugadorMano().clear();
+        j3A.recibirCarta(azul3);
+        juego3.jugarTurno(azul3.uno());
+        assertTrue(j3A.jugadorMano().size() >= 2);
+    }
+    @Test
+    public void test19JugadorRobaHastaTenerCartaValida() {
         Carta cartaMesa = rojo5;
         Carta cartaInvalida = skipVerde;
         juegoUNO juego = new juegoUNO(List.of(j2A, j2B), crearMazo2());
@@ -269,14 +276,7 @@ public class juegoUNOTest3 {
         assertTrue(j2A.jugadorMano().contains(verde2));
         assertFalse(j2A.jugadorMano().contains(rojo3));
     }
-    @Test
-    public void test19JugadorSinCartaValidaRoba() {
-        // Simular que solo tiene una carta no jugable
-        j3A.jugadorMano().clear();
-        j3A.recibirCarta(azul3);
-        juego3.jugarTurno(azul3.uno());
-        assertTrue(j3A.jugadorMano().size() >= 2); // tenía una, ahora al menos otra más
-    }
+
 
 
 }
