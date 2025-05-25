@@ -7,7 +7,7 @@ public class ReverseCarta extends CartaColor {
     }
 
     @Override
-    public void aplicarEfecto(GameUNO juego) {
+    public void aplicarEfecto(juegoUNO juego) {
         juego.direccion = juego.direccion.invertir();
     }
 }

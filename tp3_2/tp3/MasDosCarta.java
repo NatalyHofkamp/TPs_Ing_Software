@@ -6,8 +6,8 @@ public class MasDosCarta extends CartaColor {
         super(color, "+2");
     }
 
-    public void aplicarEfecto(GameUNO juego) {
-        juego.direccion.avanzar(); // saltamos y obtenemos el penalizado
+    public void aplicarEfecto(juegoUNO juego) {
+        juego.direccion.avanzar();
         juego.repartirCartas(2);
     }
 

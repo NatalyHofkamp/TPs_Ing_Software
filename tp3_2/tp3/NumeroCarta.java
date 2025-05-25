@@ -9,7 +9,7 @@ public class NumeroCarta extends CartaColor {
     }
 
     @Override
-    public void aplicarEfecto(GameUNO juego) {
+    public void aplicarEfecto(juegoUNO juego) {
         // No tiene efecto especial
     }
 }

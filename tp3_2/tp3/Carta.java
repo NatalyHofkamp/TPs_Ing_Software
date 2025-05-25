@@ -9,7 +9,6 @@ public abstract class Carta {
         this.tipo = tipo;
     }
 
-
     public Carta uno() {this.cantaUNO = true; return this;}
 
     public boolean cantoUNO() {return cantaUNO;}
@@ -26,6 +25,6 @@ public abstract class Carta {
 
     public abstract boolean puedeJugarSobre(Carta cartaSobreMesa);
 
-    public abstract void aplicarEfecto(GameUNO juego);
+    public abstract void aplicarEfecto(juegoUNO juego);
 }
 

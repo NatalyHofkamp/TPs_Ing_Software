@@ -4,13 +4,13 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GameUNO {
+public class juegoUNO {
     public Direccion direccion;
     public Deque<Carta> mazo_total = new LinkedList<>();
     public Carta carta_mesa;
     private int cant_jugadores;
-    private boolean win;
-    public GameUNO(List<Jugador> jugadores, Deque<Carta> mazo_total) {
+    private boolean gano;
+    public juegoUNO(List<Jugador> jugadores, Deque<Carta> mazo_total) {
         if (jugadores.isEmpty()) throw new IllegalArgumentException("Lista vacía");
         Jugador first = jugadores.get(0);
         Jugador prev = first;
@@ -28,17 +28,13 @@ public class GameUNO {
         this.carta_mesa = mazo_total.pop();
 
     }
-    public GameUNO repartirCartas(int cant_cartas) {
+    public juegoUNO repartirCartas(int cant_cartas) {
         for (int i = 0; i < cant_cartas; i++) {
             getCurrent().recibirCarta(mazo_total.pop());
         }
         return this;
 
     }
-    public int getCantJugadores() { return cant_jugadores;    }
-
-
-
     public Carta getCarta() {
         if (mazo_total.isEmpty()) {
             throw new IllegalStateException("El mazo está vacío");
@@ -52,22 +48,19 @@ public class GameUNO {
         return carta_mesa;
     }
 
-    public GameUNO playTurn(Carta carta_elegida) {
-        if(win){throw new IllegalStateException("El juego ya terminó, no se puede seguir jugando.");}
-        Jugador actual_player = this.getCurrent();
+    public juegoUNO jugarTurno(Carta carta_elegida) {
+        if(gano){throw new IllegalStateException("El juego ya terminó, no se puede seguir jugando.");}
+        Jugador jugadorActual = this.getCurrent();
+        jugadorActual.jugar(this,carta_elegida);
 
-        actual_player.jugar(this,carta_elegida);
-
-        if (actual_player.getMano().size() == 1 && !carta_elegida.cantoUNO()) {
-            this.aplicarPenalidadUNO(actual_player);
+        if (jugadorActual.jugadorMano().size() == 1 && !carta_elegida.cantoUNO()) {
+            this.aplicarPenalidadUNO(jugadorActual);
             System.out.println("Penalidad por no cantar UNO!");
         }
 
-        if (actual_player.haGanado()){
-            win = true;
+        if (jugadorActual.haGanado()){
+            gano = true;
         }
-
-
         direccion.avanzar();
 
         return this;

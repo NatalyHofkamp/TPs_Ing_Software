@@ -7,7 +7,7 @@ public class SkipCarta extends CartaColor {
     }
 
     @Override
-    public void aplicarEfecto(GameUNO juego) {
+    public void aplicarEfecto(juegoUNO juego) {
         juego.direccion.avanzar();
     }
 }

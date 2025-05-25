@@ -11,7 +11,7 @@ public class CartaWild extends Carta {
         return this.color.equals(cartaSobreMesa.getColor());
     }
 
-    public void aplicarEfecto(GameUNO juego) {
+    public void aplicarEfecto(juegoUNO juego) {
         return;
     }
 

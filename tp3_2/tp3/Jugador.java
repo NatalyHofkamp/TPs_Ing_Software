@@ -19,9 +19,7 @@ public class Jugador {
         return nombre;
     }
 
-    public Deque<Carta> getMano() {return mano;}
-
-    public boolean haCantado() {return cantoUNO;}
+    public Deque<Carta> jugadorMano() {return mano;}
 
     public boolean haGanado() {
         return mano.isEmpty();
@@ -32,28 +30,19 @@ public class Jugador {
     }
 
 
-    private void jugarCartaValida(GameUNO juego, Carta carta) {
+    private void jugarCartaValida(juegoUNO juego, Carta carta) {
         carta.aplicarEfecto(juego);
         juego.carta_mesa = carta;
         mano.remove(carta);
 
     }
 
-    public void jugar(GameUNO juego, Carta carta) {
+    public void jugar(juegoUNO juego, Carta carta) {
         while (!carta.puedeJugarSobre(juego.carta_mesa)) {
             carta = juego.getCarta();
             recibirCarta(carta);
         }
         jugarCartaValida(juego, carta);
     }
-    public void cantarUNO() {
-        cantoUNO = true;
-    }
-
-
-
-
-
-
 
 }
