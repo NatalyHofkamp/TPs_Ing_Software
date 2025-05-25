@@ -35,7 +35,7 @@ public class juegoUNOTest3 {
     private Deque<Carta> crearMazo1() {
         return new LinkedList<>(List.of(
                 rojo5, azul4, rojo7, masDosRojo, skipVerde,
-                reverseAzul, rojo3, wild, masDosVerde, rojo5,
+                reverseAzul, rojo3, masDosVerde, rojo5,
                 skipAmarillo, reverseVerde, rojo2, verde2, azul3
         ));
     }
@@ -191,7 +191,35 @@ public class juegoUNOTest3 {
     }
 
     @Test
-    public void test13SecuenciaDeTurnosConCartasValidas() {
+    public void test13ReverseYSiguienteJugadorTiraSkip() {
+        j3A.recibirCarta(reverseRojo);
+        j3C.recibirCarta(skipRojo);
+        juego3.jugarTurno(reverseRojo); // Cambia dirección, turno a prev (j3C)
+        juego3.jugarTurno(skipRojo);    // Salta a j3A de nuevo
+        assertEquals(j3A, juego3.getCurrent());
+    }
+    @Test
+    public void test14MasDosSeguidoDeSkipSaltaCorrectamente() {
+        j3A.recibirCarta(masDosRojo);
+        j3C.recibirCarta(skipRojo);
+        juego3.jugarTurno(masDosRojo); // j3B recibe +2, se saltea
+        juego3.jugarTurno(skipRojo);   // j3A se saltea
+        assertEquals(j3B, juego3.getCurrent());
+    }
+
+    @Test
+    public void test15WildCambiaColorYSeRespetaEnTurnoSiguiente() {
+        CartaWild wildRojo = new CartaWild();
+        wildRojo.asignarColor("Rojo");
+        j3A.recibirCarta(wildRojo);
+        juego3.jugarTurno(wildRojo);
+        j3B.recibirCarta(rojo3);
+        juego3.jugarTurno(rojo3);
+        assertEquals(rojo3, juego3.topCard());
+    }
+
+    @Test
+    public void test16SecuenciaDeTurnosConCartasValidas() {
         j3A.recibirCarta(rojo7);
         juego3.jugarTurno(rojo7);
         assertEquals(rojo7, juego3.topCard());
@@ -209,7 +237,7 @@ public class juegoUNOTest3 {
     }
 
     @Test
-    public void test14CantaUnoYGanaYNoSePuedeSeguirJugando() {
+    public void test17CantaUnoYGanaYNoSePuedeSeguirJugando() {
         j2A.jugadorMano().clear();
         j2A.recibirCarta(rojo3);
         j2A.recibirCarta(rojo5);
@@ -228,7 +256,7 @@ public class juegoUNOTest3 {
     }
 
     @Test
-    public void test15JugadorRobaHastaTenerCartaValida() {
+    public void test18JugadorRobaHastaTenerCartaValida() {
         Carta cartaMesa = rojo5;
         Carta cartaInvalida = skipVerde;
         juegoUNO juego = new juegoUNO(List.of(j2A, j2B), crearMazo2());
@@ -240,6 +268,14 @@ public class juegoUNOTest3 {
         assertTrue(j2A.jugadorMano().contains(azul3));
         assertTrue(j2A.jugadorMano().contains(verde2));
         assertFalse(j2A.jugadorMano().contains(rojo3));
+    }
+    @Test
+    public void test19JugadorSinCartaValidaRoba() {
+        // Simular que solo tiene una carta no jugable
+        j3A.jugadorMano().clear();
+        j3A.recibirCarta(azul3);
+        juego3.jugarTurno(azul3.uno());
+        assertTrue(j3A.jugadorMano().size() >= 2); // tenía una, ahora al menos otra más
     }
 
 
