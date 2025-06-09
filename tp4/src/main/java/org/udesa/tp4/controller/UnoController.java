@@ -18,9 +18,9 @@ public class UnoController {
 //    public String saludo() {return "index";}
 //    public String saludo() {return "hola luidolacrack";}
 
-    @GetMapping("/hola")
-    public ResponseEntity<String> holaMundo() {
-        return new ResponseEntity<>("respuesta a Hola Mundo", HttpStatus.OK);
+    @GetMapping("/")
+    public String saludo() {
+        return "index";  // va a buscar templates/index.html
     }
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
         return ResponseEntity.ok(unoService.newMatch(players));}
