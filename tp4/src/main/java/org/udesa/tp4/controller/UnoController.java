@@ -30,7 +30,10 @@ public class UnoController {
         return ResponseEntity.ok(unoService.play(matchId, player, card));
     }
 
-    //@PostMapping("draw/{matchId}/{player}") public ResponseEntity drawCard( @PathVariable UUID matchId, @PathVariable String player ) {}
+    @PostMapping("draw/{matchId}/{player}") public ResponseEntity
+    drawCard( @PathVariable UUID matchId, @PathVariable String player ) {
+        return ResponseEntity.ok(unoService.drawCard(matchId, player));
+    }
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard( @PathVariable UUID matchId ) {
         return ResponseEntity.ok(unoService.activeCard(matchId));
     }

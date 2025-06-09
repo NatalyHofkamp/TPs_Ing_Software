@@ -39,4 +39,14 @@ public class UnoService {
         }
 
     }
+    public UUID drawCard(UUID matchId, String player){
+        Match match = sessions.get(matchId);
+        if (match == null) {return null;}
+        else{
+            match.drawCard(player);
+            sessions.put( matchId, match);
+            return matchId;
+        }
+
+    }
 }
