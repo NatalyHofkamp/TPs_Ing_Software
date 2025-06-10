@@ -18,4 +18,10 @@ public class UnoServiceTest {
         UUID id = unoService.newMatch(List.of("lu", "naty"));
         assertNotNull(id);
     }
+    // chequear players new match
+    // chequear play: UUID matchId, String player, JsonCard card
+    // active card: chequear match
+    // draw card chequar cartas jugador: (UUID matchId, String player
+    //player hand: chequear match id
+
 }
