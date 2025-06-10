@@ -22,6 +22,10 @@ public class UnoController {
     public String saludo() {
         return "index";  // va a buscar templates/index.html
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleIllegalArgument(RuntimeException ex) {
+        return ResponseEntity.internalServerError().body( ex.getMessage());
+    }
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
         return ResponseEntity.ok(unoService.newMatch(players));}
 
