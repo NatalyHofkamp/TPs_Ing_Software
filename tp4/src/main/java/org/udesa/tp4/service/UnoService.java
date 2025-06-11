@@ -24,6 +24,15 @@ public class UnoService {
         sessions.put(newKey, Match.fullMatch(dealer.fullDeck(), players));
         return newKey;
     }
+    public void addMatch(Match match, UUID sessionId) {sessions.put(sessionId, match);}
+
+    public Match getMatch(UUID matchId) {
+        Match match = sessions.get(matchId);
+        if (match == null) {
+            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+        }
+        return match;
+    }
 
     public UUID play(UUID matchId, String player, JsonCard card) {
         Match match = sessions.get(matchId);
