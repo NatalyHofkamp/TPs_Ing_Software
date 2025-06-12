@@ -7,10 +7,7 @@ import org.udesa.tp4.model.JsonCard;
 import org.udesa.tp4.model.Match;
 import org.udesa.tp4.model.Player;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UnoService {
@@ -96,6 +93,24 @@ public class UnoService {
             else {
                 throw new RuntimeException("Error al robar una carta: " + e.getMessage());
             }
+        }
+    }
+    public List<JsonCard> playerHand(UUID matchId) {
+        Match match = sessions.get(matchId);
+        if (match == null) {
+            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+        }
+
+        try {
+            List<Card> hand = match.playerHand();
+            List<JsonCard> cards = new ArrayList<>();
+            for (Card card : hand) {
+                cards.add(card.asJson());
+            }
+
+            return cards;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener la mano del jugador: " + e.getMessage());
         }
     }
 }

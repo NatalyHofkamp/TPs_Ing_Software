@@ -23,9 +23,18 @@ public class UnoController {
         return "index";  // va a buscar templates/index.html
     }
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleIllegalArgument(RuntimeException ex) {
-        return ResponseEntity.internalServerError().body( ex.getMessage());
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error interno: " + ex.getMessage());
     }
+
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body("Error en la petición: " + ex.getMessage());
+    }
+
+
     @PostMapping("newmatch") public ResponseEntity newMatch( @RequestParam List<String> players ) {
         return ResponseEntity.ok(unoService.newMatch(players));}
 
@@ -41,6 +50,8 @@ public class UnoController {
     @GetMapping("activecard/{matchId}") public ResponseEntity activeCard( @PathVariable UUID matchId ) {
         return ResponseEntity.ok(unoService.activeCard(matchId));
     }
-//    @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {}
+    @GetMapping("playerhand/{matchId}") public ResponseEntity playerHand( @PathVariable UUID matchId ) {
+        return ResponseEntity.ok(unoService.playerHand(matchId));
+    }
 
 }
