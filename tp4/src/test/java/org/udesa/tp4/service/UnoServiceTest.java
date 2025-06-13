@@ -26,18 +26,26 @@ public class UnoServiceTest {
     UUID matchId;
     Match spyMatch;
     ArrayList<Card> fullDeck;
-
+    ArrayList<Card> blueDeck;
     @BeforeEach
     public void setup() {
-        fullDeck = buildDeck(20);
-        when(dealer.fullDeck()).thenReturn(fullDeck);
+        // Crear mazo azul para usar en el dealer
+        blueDeck = buildDeck(20);
 
-        matchId = unoService.newMatch(List.of("Alice"));
+        // Mockeamos el dealer para que devuelva ese mazo cuando se llame fullDeck()
+        when(dealer.fullDeck()).thenReturn(blueDeck);
+
+        // Crear nueva partida con los jugadores y asignar el UUID al campo de instancia
+        matchId = unoService.newMatch(List.of("Alice", "Bob"));
+
+        // Obtenemos la partida que creó unoService y la "espiamos" para poder verificar métodos
         Match originalMatch = unoService.getMatch(matchId);
-
         spyMatch = spy(originalMatch);
+
+        // Reemplazamos la partida en el servicio por el spy para poder verificar interacciones
         unoService.addMatch(spyMatch, matchId);
     }
+
 
     @Test
     public void newMatchTest() {
@@ -110,10 +118,10 @@ public class UnoServiceTest {
         Card activeCard = new NumberCard("Red", 7);
         when(spyMatch.activeCard()).thenReturn(activeCard);
 
-        JsonCard actual = unoService.activeCard(matchId);
+        Card actual = unoService.activeCard(matchId);
 
-        assertEquals(activeCard.asJson().getColor(), actual.getColor());
-        assertEquals(activeCard.asJson().getNumber(), actual.getNumber());
+        assertEquals(activeCard.asJson().getColor(), actual.asJson().getColor());
+        assertEquals(activeCard.asJson().getNumber(), actual.asJson().getNumber());
     }
 
     @Test

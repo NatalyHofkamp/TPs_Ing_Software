@@ -37,6 +37,7 @@ public class UnoService {
             throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
         }
 
+
         if (match.isOver()) {
             throw new RuntimeException("El juego ha terminado.");
         }
@@ -49,9 +50,9 @@ public class UnoService {
             if (e.getMessage().equals(Match.NotACardInHand + player)) {
                 throw new RuntimeException("El jugador no tiene la carta en su mano: " + e.getMessage());
             } else if (e.getMessage().equals(Match.CardDoNotMatch)) {
-                throw new RuntimeException("La carta no coincide con el color, número o tipo: " + e.getMessage());
+                throw new RuntimeException(Match.CardDoNotMatch + e.getMessage());
             } else if (e.getMessage().startsWith(Player.NotPlayersTurn)) {
-                throw new RuntimeException("No es el turno del jugador: " + player);
+                throw new RuntimeException(Player.NotPlayersTurn + player);
             }
             else {
                 throw new RuntimeException("Error al jugar la carta: " + e.getMessage()); // Generic error
@@ -59,14 +60,14 @@ public class UnoService {
         }
     }
 
-    public JsonCard activeCard(UUID matchId) {
+    public Card activeCard(UUID matchId) {
         Match match = sessions.get(matchId);
         if (match == null) {
             throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
         }
 
         try {
-            return match.activeCard().asJson();
+            return match.activeCard();
         } catch (Exception e) {
             throw new RuntimeException("Error al obtener la carta activa: " + e.getMessage());
         }
@@ -88,7 +89,7 @@ public class UnoService {
             return matchId;
         } catch (RuntimeException e) {
             if (e.getMessage().startsWith(Player.NotPlayersTurn)) {
-                throw new RuntimeException("No es el turno del jugador: " + player);
+                throw new RuntimeException(Player.NotPlayersTurn + player);
             }
             else {
                 throw new RuntimeException("Error al robar una carta: " + e.getMessage());
