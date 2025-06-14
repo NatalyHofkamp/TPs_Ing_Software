@@ -26,7 +26,7 @@ public class UnoService {
     public Match getMatch(UUID matchId) {
         Match match = sessions.get(matchId);
         if (match == null) {
-            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+            throw new RuntimeException("No matchID: " + matchId);
         }
         return match;
     }
@@ -34,12 +34,12 @@ public class UnoService {
     public UUID play(UUID matchId, String player, JsonCard card) {
         Match match = sessions.get(matchId);
         if (match == null) {
-            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+            throw new RuntimeException("No matchID: " + matchId);
         }
 
 
         if (match.isOver()) {
-            throw new RuntimeException("El juego ha terminado.");
+            throw new RuntimeException("game over");
         }
 
         try {
@@ -48,7 +48,7 @@ public class UnoService {
             return matchId;
         } catch (RuntimeException e) {
             if (e.getMessage().equals(Match.NotACardInHand + player)) {
-                throw new RuntimeException("El jugador no tiene la carta en su mano: " + e.getMessage());
+                throw new RuntimeException(Match.NotACardInHand  + e.getMessage());
             } else if (e.getMessage().equals(Match.CardDoNotMatch)) {
                 throw new RuntimeException(Match.CardDoNotMatch + e.getMessage());
             } else if (e.getMessage().startsWith(Player.NotPlayersTurn)) {
@@ -63,7 +63,7 @@ public class UnoService {
     public Card activeCard(UUID matchId) {
         Match match = sessions.get(matchId);
         if (match == null) {
-            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+            throw new RuntimeException("No matchID " + matchId);
         }
 
         try {
@@ -76,11 +76,11 @@ public class UnoService {
     public UUID drawCard(UUID matchId, String player) {
         Match match = sessions.get(matchId);
         if (match == null) {
-            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+            throw new RuntimeException("No matchID " + matchId);
         }
 
         if (match.isOver()) {
-            throw new RuntimeException("El juego ha terminado.");
+            throw new RuntimeException("game over");
         }
 
         try {
@@ -99,7 +99,7 @@ public class UnoService {
     public List<JsonCard> playerHand(UUID matchId) {
         Match match = sessions.get(matchId);
         if (match == null) {
-            throw new RuntimeException("No se encontró una partida con el ID: " + matchId);
+            throw new RuntimeException("No matchID: " + matchId);
         }
 
         try {

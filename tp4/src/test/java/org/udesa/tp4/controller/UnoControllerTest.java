@@ -50,16 +50,13 @@ public class UnoControllerTest {
 
     private UUID matchId;
 
-    private ArrayList<Card> blueDeck;
+    private ArrayList<Card> myDeck;
 
     @BeforeEach
     public void setup() {
         // Construir mazo azul para el dealer mockeado
-        blueDeck = buildDeck();
-        doReturn(blueDeck).when(dealer).fullDeck();
-
-
-        // Crear nueva partida con jugadores reales
+        myDeck = buildDeck();
+        doReturn(myDeck).when(dealer).fullDeck();
         matchId = unoService.newMatch(List.of("Alice", "Bob"));
     }
 
@@ -118,7 +115,7 @@ public class UnoControllerTest {
         mockMvc.perform(post("/play/" + matchId + "/" + player)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(card)))
-                .andExpect(status().is5xxServerError()) // 400
+                .andExpect(status().is5xxServerError())
                 .andExpect(content().string(containsString("Invalid play")));  // opcional para validar mensaje
     }
 
@@ -176,8 +173,6 @@ public class UnoControllerTest {
                 .andExpect(content().string(containsString(expectedErrorMsg)));
     }
     private void getPlayerHandExpectingFailure(UUID matchId, String expectedErrorMsg) throws Exception {
-//        when(unoService.playerHand(matchId))
-//                .thenThrow(new RuntimeException(expectedErrorMsg));
 
         mockMvc.perform(get("/playerhand/" + matchId))
                 .andExpect(status().is5xxServerError())
@@ -221,76 +216,6 @@ public class UnoControllerTest {
 
         playCardExpectingFailure(matchId, player, cardToPlay,"Not a card in hand");
     }
-
-
-    @Test
-    public void testPlayCardFails_GameIsOver() throws Exception {
-        String alice = "Alice";
-        String bob = "Bob";
-
-        // Mazo con pila inicial + 7 cartas para Alice + 7 cartas para Bob
-        ArrayList<Card> newDeck = new ArrayList<>(List.of(
-                new NumberCard("Red", 3),     // pila central (descartes)
-
-                // Cartas de Alice
-                new NumberCard("Red", 7),
-                new NumberCard("Yellow", 2),
-                new NumberCard("Green", 7),
-                new NumberCard("Blue", 4),
-                new NumberCard("Green", 9),
-                new NumberCard("Yellow", 1),
-                new NumberCard("Red", 2),
-
-                // Cartas de Bob
-                new NumberCard("Red", 2),
-                new NumberCard("Yellow", 7),
-                new NumberCard("Green", 4),
-                new NumberCard("Blue", 9),
-                new NumberCard("Green", 1),
-                new NumberCard("Red", 1),
-                new NumberCard("Blue", 2)
-        ));
-
-        // Mockear el dealer para devolver ese mazo
-        doReturn(newDeck).when(dealer).fullDeck();
-
-        // Crear el match *aquí* para que tome el mazo correcto
-        matchId = unoService.newMatch(List.of(alice, bob));
-
-        // Jugar todas las cartas de Alice y Bob alternadamente
-        for (int i = 0; i < 7; i++) {
-            Card aliceCard = newDeck.get(i + 1);
-            JsonCard aliceJsonCard = new JsonCard(
-                    aliceCard.asJson().getColor(),
-                    aliceCard.asJson().getNumber(),
-                    aliceCard.asJson().getType(),
-                    (i == 5 || i == 6)  // shout true solo en anteúltimas jugadas
-            );
-            System.out.println("Alice juega: " + aliceJsonCard.getColor() + " " + aliceJsonCard.getNumber() + " shout:" + aliceJsonCard.isShout());
-            playCard(matchId, "Alice", aliceJsonCard);
-
-            Card bobCard = newDeck.get(i + 8);
-            JsonCard bobJsonCard = new JsonCard(
-                    bobCard.asJson().getColor(),
-                    bobCard.asJson().getNumber(),
-                    bobCard.asJson().getType(),
-                    (i == 5 || i == 6)
-            );
-            System.out.println("Bob juega: " + bobJsonCard.getColor() + " " + bobJsonCard.getNumber() + " shout:" + bobJsonCard.isShout());
-
-            if (i < 6) {
-                // Para las primeras 6 cartas de Bob, juega normalmente
-                playCard(matchId, "Bob", bobJsonCard);
-            } else {
-                // Para la última carta de Bob, esperamos que falle porque el juego terminó
-                playCardExpectingFailure(matchId, "Bob", bobJsonCard.asCard(), "El juego ha terminado");
-            }
-        }
-
- }
-
-
-
 
     @Test
     public void testPlayCardFails_PlayerHasNoCard() throws Exception {
@@ -372,7 +297,7 @@ public class UnoControllerTest {
     @Test
     public void testPlayerHandFailsForInvalidMatch() throws Exception {
         UUID randomID = UUID.randomUUID();
-        getPlayerHandExpectingFailure(randomID, "No se encontró una partida con el ID");
+        getPlayerHandExpectingFailure(randomID, "No matchID");
     }
 
     @Test
@@ -381,12 +306,71 @@ public class UnoControllerTest {
         playCardWithMalformedJson(UUID.randomUUID(), "Alice", "{\"color\":\"Red\",\"number\":\"abc\"}");
     }
 
+    @Test
+    public void testPlayCardFails_GameIsOver() throws Exception {
+        String alice = "Alice";
+        String bob = "Bob";
+
+        // Mazo con pila inicial + 7 cartas para Alice + 7 cartas para Bob
+        ArrayList<Card> newDeck = new ArrayList<>(List.of(
+                new NumberCard("Red", 3),     // pila central (descartes)
+
+                // Cartas de Alice
+                new NumberCard("Red", 7),
+                new NumberCard("Yellow", 2),
+                new NumberCard("Green", 7),
+                new NumberCard("Blue", 4),
+                new NumberCard("Green", 9),
+                new NumberCard("Yellow", 1),
+                new NumberCard("Red", 2),
+
+                // Cartas de Bob
+                new NumberCard("Red", 2),
+                new NumberCard("Yellow", 7),
+                new NumberCard("Green", 4),
+                new NumberCard("Blue", 9),
+                new NumberCard("Green", 1),
+                new NumberCard("Red", 1),
+                new NumberCard("Blue", 2)
+        ));
+
+        // Mockear el dealer para devolver ese mazo
+        doReturn(newDeck).when(dealer).fullDeck();
+
+        // Crear el match *aquí* para que tome el mazo correcto
+        matchId = unoService.newMatch(List.of(alice, bob));
+
+        // Jugar todas las cartas de Alice y Bob alternadamente
+        for (int i = 0; i < 7; i++) {
+            Card aliceCard = newDeck.get(i + 1);
+            JsonCard aliceJsonCard = new JsonCard(
+                    aliceCard.asJson().getColor(),
+                    aliceCard.asJson().getNumber(),
+                    aliceCard.asJson().getType(),
+                    (i == 5 || i == 6)  // shout true solo en anteúltimas jugadas
+            );
+            System.out.println("Alice juega: " + aliceJsonCard.getColor() + " " + aliceJsonCard.getNumber() + " shout:" + aliceJsonCard.isShout());
+            playCard(matchId, "Alice", aliceJsonCard);
+
+            Card bobCard = newDeck.get(i + 8);
+            JsonCard bobJsonCard = new JsonCard(
+                    bobCard.asJson().getColor(),
+                    bobCard.asJson().getNumber(),
+                    bobCard.asJson().getType(),
+                    (i == 5 || i == 6)
+            );
+            System.out.println("Bob juega: " + bobJsonCard.getColor() + " " + bobJsonCard.getNumber() + " shout:" + bobJsonCard.isShout());
+
+            if (i < 6) {
+                // Para las primeras 6 cartas de Bob, juega normalmente
+                playCard(matchId, "Bob", bobJsonCard);
+            } else {
+                // Para la última carta de Bob, esperamos que falle porque el juego terminó
+                playCardExpectingFailure(matchId, "Bob", bobJsonCard.asCard(), "game over");
+            }
+        }
+
+    }
+
 }
 
-
-// new match no null
-// chequear players new match
-// chequear play: UUID matchId, String player, JsonCard card
-// active card: chequear match
-// draw card chequar cartas jugador: (UUID matchId, String player
-//player hand: chequear match id
