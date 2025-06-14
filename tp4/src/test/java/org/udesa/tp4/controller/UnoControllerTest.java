@@ -222,7 +222,6 @@ public class UnoControllerTest {
 
         String player = "Alice";
         Card card = new NumberCard("Green", 0);
-//        playCard(matchId, player, cardToPlay);
         playCardExpectingFailure(matchId, player, card, "Not a card in hand");
     }
 
@@ -233,6 +232,14 @@ public class UnoControllerTest {
         Card card = new NumberCard("Blue", 6);
 
         playCardExpectingFailure(matchId, player, card, "It is not turn of player");
+    }
+
+    @Test
+    public void testPlayCardFails_CardDoesNotMatch() throws Exception {
+
+        String player = "Alice";
+        Card card = new NumberCard("Green", 1);
+        playCardExpectingFailure(matchId, player, card, "Card does not match Color, Number or Kind");
     }
 
 

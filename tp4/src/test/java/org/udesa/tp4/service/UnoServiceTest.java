@@ -25,24 +25,19 @@ public class UnoServiceTest {
 
     UUID matchId;
     Match spyMatch;
-    ArrayList<Card> fullDeck;
-    ArrayList<Card> blueDeck;
+    ArrayList<Card> myDeck;
     @BeforeEach
     public void setup() {
-        // Crear mazo azul para usar en el dealer
-        blueDeck = buildDeck();
 
-        // Mockeamos el dealer para que devuelva ese mazo cuando se llame fullDeck()
-        when(dealer.fullDeck()).thenReturn(blueDeck);
+        myDeck = buildDeck();
 
-        // Crear nueva partida con los jugadores y asignar el UUID al campo de instancia
-        matchId = unoService.newMatch(List.of("Alice", "Bob"));
+        when(dealer.fullDeck()).thenReturn(myDeck);
 
-        // Obtenemos la partida que creó unoService y la "espiamos" para poder verificar métodos
+        matchId = unoService.newMatch(List.of("botcito", "Bob"));
+
         Match originalMatch = unoService.getMatch(matchId);
         spyMatch = spy(originalMatch);
 
-        // Reemplazamos la partida en el servicio por el spy para poder verificar interacciones
         unoService.addMatch(spyMatch, matchId);
     }
 
@@ -64,9 +59,9 @@ public class UnoServiceTest {
         JsonCard jsonCard = new JsonCard("Red", 7, "NumberCard", false);
         Card expectedCard = jsonCard.asCard();
 
-        unoService.play(matchId, "Alice", jsonCard);
+        unoService.play(matchId, "botcito", jsonCard);
 
-        verify(spyMatch, times(1)).play("Alice", expectedCard);
+        verify(spyMatch, times(1)).play("botcito", expectedCard);
     }
 
     @Test
@@ -74,7 +69,7 @@ public class UnoServiceTest {
         UUID unknownId = UUID.randomUUID();
         JsonCard card = new JsonCard("Green", 3, "NumberCard", false);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.play(unknownId, "Alice", card));
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.play(unknownId, "botcito", card));
         assertTrue(ex.getMessage().contains("No matchID"));
     }
     @Test
@@ -83,7 +78,7 @@ public class UnoServiceTest {
 
         JsonCard card = new JsonCard("Red", 7, "NumberCard", false);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "Alice", card));
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "botcito", card));
         assertTrue(ex.getMessage().contains("game over"));
     }
 
@@ -91,25 +86,25 @@ public class UnoServiceTest {
     public void play_shouldTranslateKnownMatchExceptions() {
         JsonCard card = new JsonCard("Red", 7, "NumberCard", false);
 
-        doThrow(new RuntimeException(Match.NotACardInHand + "Alice"))
+        doThrow(new RuntimeException(Match.NotACardInHand + "botcito"))
                 .when(spyMatch).play(anyString(), any(Card.class));
-        RuntimeException ex1 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "Alice", card));
+        RuntimeException ex1 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "botcito", card));
         assertTrue(ex1.getMessage().contains("Not a card in hand"));
 
         doThrow(new RuntimeException(Match.CardDoNotMatch))
                 .when(spyMatch).play(anyString(), any(Card.class));
-        RuntimeException ex2 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "Alice", card));
+        RuntimeException ex2 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "botcito", card));
         assertTrue(ex2.getMessage().contains("Card does not match"));
 
-        doThrow(new RuntimeException(Player.NotPlayersTurn + "Alice"))
+        doThrow(new RuntimeException(Player.NotPlayersTurn + "botcito"))
                 .when(spyMatch).play(anyString(), any(Card.class));
-        RuntimeException ex3 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "Alice", card));
+        RuntimeException ex3 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "botcito", card));
         assertTrue(ex3.getMessage().contains("It is not turn of player"));
 
         doThrow(new RuntimeException("Error raro"))
                 .when(spyMatch).play(anyString(), any(Card.class));
-        RuntimeException ex4 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "Alice", card));
-        assertTrue(ex4.getMessage().contains("Error al jugar la carta"));
+        RuntimeException ex4 = assertThrows(RuntimeException.class, () -> unoService.play(matchId, "botcito", card));
+        assertTrue(ex4.getMessage().contains("Error playcard"));
     }
 
 
@@ -134,14 +129,14 @@ public class UnoServiceTest {
 
     @Test
     public void drawCard_shouldCallMatchDrawCard() {
-        unoService.drawCard(matchId, "Alice");
-        verify(spyMatch, times(1)).drawCard("Alice");
+        unoService.drawCard(matchId, "botcito");
+        verify(spyMatch, times(1)).drawCard("botcito");
     }
 
     @Test
     public void drawCard_shouldThrowIfMatchNotFound() {
         UUID unknownId = UUID.randomUUID();
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.drawCard(unknownId, "Alice"));
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.drawCard(unknownId, "botcito"));
         assertTrue(ex.getMessage().contains("No matchID"));
     }
 
@@ -149,22 +144,56 @@ public class UnoServiceTest {
     public void drawCard_shouldThrowIfGameOver() {
         when(spyMatch.isOver()).thenReturn(true);
 
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "Alice"));
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "botcito"));
         assertTrue(ex.getMessage().contains("game over"));
     }
 
     @Test
     public void drawCard_shouldTranslateKnownMatchExceptions() {
-        doThrow(new RuntimeException(Player.NotPlayersTurn + "Alice"))
-                .when(spyMatch).drawCard("Alice");
-        RuntimeException ex1 = assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "Alice"));
+        doThrow(new RuntimeException(Player.NotPlayersTurn + "botcito"))
+                .when(spyMatch).drawCard("botcito");
+        RuntimeException ex1 = assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "botcito"));
         assertTrue(ex1.getMessage().contains("turn"));
 
         doThrow(new RuntimeException("Error extraño"))
-                .when(spyMatch).drawCard("Alice");
-        RuntimeException ex2 = assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "Alice"));
-        assertTrue(ex2.getMessage().contains("Error al robar"));
+                .when(spyMatch).drawCard("botcito");
+        RuntimeException ex2 = assertThrows(RuntimeException.class, () -> unoService.drawCard(matchId, "botcito"));
+        assertTrue(ex2.getMessage().contains("Error drawcard"));
     }
+    @Test
+    public void playerHand_shouldReturnJsonCards() {
+        List<Card> hand = List.of(
+                new NumberCard("Red", 5),
+                new NumberCard("Blue", 2)
+        );
+        when(spyMatch.playerHand()).thenReturn(hand);
+
+        List<JsonCard> result = unoService.playerHand(matchId);
+
+        assertEquals(2, result.size());
+        assertEquals("Red", result.get(0).getColor());
+        assertEquals(5, result.get(0).getNumber());
+        assertEquals("Blue", result.get(1).getColor());
+        assertEquals(2, result.get(1).getNumber());
+    }
+    @Test
+    public void playerHand_shouldThrowIfMatchNotFound() {
+        UUID unknownId = UUID.randomUUID();
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.playerHand(unknownId));
+        assertTrue(ex.getMessage().contains("No matchID"));
+    }
+
+    @Test
+    public void playerHand_shouldWrapException() {
+        when(spyMatch.playerHand()).thenThrow(new RuntimeException("algo explotó"));
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> unoService.playerHand(matchId));
+        assertTrue(ex.getMessage().contains("Error playerhand"));
+        assertTrue(ex.getMessage().contains("algo explotó"));
+    }
+
+
 
     private ArrayList<Card> buildDeck() {
         ArrayList<Card> deck = new ArrayList<>();

@@ -55,7 +55,7 @@ public class UnoService {
                 throw new RuntimeException(Player.NotPlayersTurn + player);
             }
             else {
-                throw new RuntimeException("Error al jugar la carta: " + e.getMessage()); // Generic error
+                throw new RuntimeException("Error playcard: " + e.getMessage()); // Generic error
             }
         }
     }
@@ -69,7 +69,7 @@ public class UnoService {
         try {
             return match.activeCard();
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener la carta activa: " + e.getMessage());
+            throw new RuntimeException("Error activecard: " + e.getMessage());
         }
     }
 
@@ -92,7 +92,7 @@ public class UnoService {
                 throw new RuntimeException(Player.NotPlayersTurn + player);
             }
             else {
-                throw new RuntimeException("Error al robar una carta: " + e.getMessage());
+                throw new RuntimeException("Error drawcard:" + e.getMessage());
             }
         }
     }
@@ -111,7 +111,7 @@ public class UnoService {
 
             return cards;
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener la mano del jugador: " + e.getMessage());
+            throw new RuntimeException("Error playerhand: " + e.getMessage());
         }
     }
 }
