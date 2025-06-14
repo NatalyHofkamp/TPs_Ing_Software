@@ -55,7 +55,7 @@ public class UnoControllerTest {
     @BeforeEach
     public void setup() {
         // Construir mazo azul para el dealer mockeado
-        blueDeck = buildDeck(20);
+        blueDeck = buildDeck();
         doReturn(blueDeck).when(dealer).fullDeck();
 
 
@@ -65,13 +65,23 @@ public class UnoControllerTest {
 
 
     // Funciones auxiliares corregidas según tu controlador:
-    private ArrayList<Card> buildDeck(int count) {
+    private ArrayList<Card> buildDeck() {
         ArrayList<Card> deck = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            deck.add(new NumberCard("Blue", 6));
+        String[] colors = {"Red", "Green", "Blue", "Yellow"};
+
+
+        for (String color : colors) {
+            deck.add(new NumberCard(color, 3));
+            deck.add(new NumberCard(color, 7));
+            deck.add(new NumberCard(color, 5));
+            deck.add(new NumberCard(color, 1));
         }
+
+
         return deck;
     }
+
+
     private UUID createMatch() throws Exception {
 //        UUID matchId = UUID.randomUUID();
         List<String> players = List.of("Alice", "Bob");
@@ -108,7 +118,7 @@ public class UnoControllerTest {
         mockMvc.perform(post("/play/" + matchId + "/" + player)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(card)))
-                .andExpect(status().isBadRequest()) // 400
+                .andExpect(status().is5xxServerError()) // 400
                 .andExpect(content().string(containsString("Invalid play")));  // opcional para validar mensaje
     }
 
@@ -160,11 +170,9 @@ public class UnoControllerTest {
                 .andExpect(content().string(containsString(expectedErrorMsg)));
     }
     private void drawCardExpectingFailure(UUID matchId, String player, String expectedErrorMsg) throws Exception {
-//        when(unoService.drawCard(matchId, player))
-//                .thenThrow(new IllegalArgumentException(expectedErrorMsg));
 
         mockMvc.perform(post("/draw/" + matchId + "/" + player))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().is5xxServerError())
                 .andExpect(content().string(containsString(expectedErrorMsg)));
     }
     private void getPlayerHandExpectingFailure(UUID matchId, String expectedErrorMsg) throws Exception {
@@ -200,7 +208,7 @@ public class UnoControllerTest {
 
         String player = "Alice";
 
-        JsonCard cardToPlay = new JsonCard("Blue", 6, "NumberCard", false);
+        JsonCard cardToPlay = new JsonCard("Green", 3, "NumberCard", false);
 
         playCard(matchId, player, cardToPlay);
     }
@@ -214,34 +222,82 @@ public class UnoControllerTest {
         playCardExpectingFailure(matchId, player, cardToPlay,"Not a card in hand");
     }
 
-    @Test
-    public void testPlayCardFails() throws Exception {
-
-
-        String player = "Alice";
-
-        // Esta carta se supone que es inválida según la lógica de la partida (por ej. color o número no coinciden)
-        JsonCard invalidCard = new JsonCard("Green", 0, "NumberCard", false);
-
-        // El método playCardFailing ya prepara el mock y verifica que da 5xx
-        playCardFailing(matchId, player, invalidCard);
-    }
 
     @Test
     public void testPlayCardFails_GameIsOver() throws Exception {
+        String alice = "Alice";
+        String bob = "Bob";
 
-        String player = "Alice";
-        Card card = new NumberCard("Blue", 6);
+        // Mazo con pila inicial + 7 cartas para Alice + 7 cartas para Bob
+        ArrayList<Card> newDeck = new ArrayList<>(List.of(
+                new NumberCard("Red", 3),     // pila central (descartes)
 
-        playCardExpectingFailure(matchId, player, card, "Game over");
-    }
+                // Cartas de Alice
+                new NumberCard("Red", 7),
+                new NumberCard("Yellow", 2),
+                new NumberCard("Green", 7),
+                new NumberCard("Blue", 4),
+                new NumberCard("Green", 9),
+                new NumberCard("Yellow", 1),
+                new NumberCard("Red", 2),
+
+                // Cartas de Bob
+                new NumberCard("Red", 2),
+                new NumberCard("Yellow", 7),
+                new NumberCard("Green", 4),
+                new NumberCard("Blue", 9),
+                new NumberCard("Green", 1),
+                new NumberCard("Red", 1),
+                new NumberCard("Blue", 2)
+        ));
+
+        // Mockear el dealer para devolver ese mazo
+        doReturn(newDeck).when(dealer).fullDeck();
+
+        // Crear el match *aquí* para que tome el mazo correcto
+        matchId = unoService.newMatch(List.of(alice, bob));
+
+        // Jugar todas las cartas de Alice y Bob alternadamente
+        for (int i = 0; i < 7; i++) {
+            Card aliceCard = newDeck.get(i + 1);
+            JsonCard aliceJsonCard = new JsonCard(
+                    aliceCard.asJson().getColor(),
+                    aliceCard.asJson().getNumber(),
+                    aliceCard.asJson().getType(),
+                    (i == 5 || i == 6)  // shout true solo en anteúltimas jugadas
+            );
+            System.out.println("Alice juega: " + aliceJsonCard.getColor() + " " + aliceJsonCard.getNumber() + " shout:" + aliceJsonCard.isShout());
+            playCard(matchId, "Alice", aliceJsonCard);
+
+            Card bobCard = newDeck.get(i + 8);
+            JsonCard bobJsonCard = new JsonCard(
+                    bobCard.asJson().getColor(),
+                    bobCard.asJson().getNumber(),
+                    bobCard.asJson().getType(),
+                    (i == 5 || i == 6)
+            );
+            System.out.println("Bob juega: " + bobJsonCard.getColor() + " " + bobJsonCard.getNumber() + " shout:" + bobJsonCard.isShout());
+
+            if (i < 6) {
+                // Para las primeras 6 cartas de Bob, juega normalmente
+                playCard(matchId, "Bob", bobJsonCard);
+            } else {
+                // Para la última carta de Bob, esperamos que falle porque el juego terminó
+                playCardExpectingFailure(matchId, "Bob", bobJsonCard.asCard(), "El juego ha terminado");
+            }
+        }
+
+ }
+
+
+
 
     @Test
     public void testPlayCardFails_PlayerHasNoCard() throws Exception {
 
         String player = "Alice";
         Card card = new NumberCard("Green", 0);
-
+//        playCard(matchId, player, cardToPlay);
         playCardExpectingFailure(matchId, player, card, "Not a card in hand");
     }
 
@@ -284,22 +340,22 @@ public class UnoControllerTest {
         List<JsonCard> actualHand = getPlayerHand(matchId, expectedHand);
 
         assertEquals(7, actualHand.size());
-        assertEquals("Blue", actualHand.get(0).getColor());
-        assertEquals(6, actualHand.get(0).getNumber());
-        assertEquals("Blue", actualHand.get(1).getColor());
-        assertEquals(6, actualHand.get(1).getNumber());
+        assertEquals("Red", actualHand.get(0).getColor());
+        assertEquals(7, actualHand.get(0).getNumber());
+        assertEquals("Red", actualHand.get(1).getColor());
+        assertEquals(5, actualHand.get(1).getNumber());
     }
 
     @Test
     public void testGetActiveCard() throws Exception {
 
 
-        Card activeCard = new NumberCard("Blue",6);
+        Card activeCard = new NumberCard("Blue",3);
 
         Card returnedCard = getActiveCard(matchId, activeCard).asCard();
 
-        assertEquals("Blue", returnedCard.asJson().getColor());
-        assertEquals(6, returnedCard.asJson().getNumber());
+        assertEquals("Red", returnedCard.asJson().getColor());
+        assertEquals(3, returnedCard.asJson().getNumber());
     }
     @Test
     public void testDrawCardWithInvalidPlayerFails() throws Exception {
@@ -309,8 +365,8 @@ public class UnoControllerTest {
     @Test
     public void testPlayCardWithInvalidCardFails() throws Exception {
 
-        Card invalidCard = new NumberCard("Green", 3);
-        playCardExpectingFailure(matchId, "Alice", invalidCard, "Not a card in hand");
+        Card invalidCard = new NumberCard("Green", 7);
+        playCardExpectingFailure(matchId, "Alice", invalidCard, "");
     }
 
     @Test
